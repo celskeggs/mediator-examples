@@ -48,7 +48,7 @@ func BuildWorld() *platform.World {
 func main() {
 	world := BuildWorld()
 
-	// should never return
-	err := websession.LaunchServer(world.ServerAPI(), "../resources", "icons")
-	panic(err)
+	websession.SetDefaultFlags("../resources", "icons")
+
+	websession.LaunchServerFromFlags(world.ServerAPI())
 }

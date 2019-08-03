@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/celskeggs/mediator/web/sprite"
+	"github.com/celskeggs/mediator/webclient/sprite"
 	"github.com/celskeggs/mediator/websession"
 	"time"
 )

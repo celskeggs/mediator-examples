@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/celskeggs/mediator/web"
-	"github.com/celskeggs/mediator/web/sprite"
+	"github.com/celskeggs/mediator/webclient"
+	"github.com/celskeggs/mediator/webclient/sprite"
 	"log"
 	"time"
 )
