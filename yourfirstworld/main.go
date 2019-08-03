@@ -3,33 +3,35 @@ package main
 import (
 	"github.com/celskeggs/mediator/platform"
 	"github.com/celskeggs/mediator/platform/datum"
+	"github.com/celskeggs/mediator/platform/icon"
 	"github.com/celskeggs/mediator/platform/worldmap"
 	"github.com/celskeggs/mediator/websession"
 	"path"
 )
 
-func BuildTree() *datum.TypeTree {
+func BuildTree(resourceDir string) *datum.TypeTree {
 	tree := platform.NewAtomicTree()
+	icons := icon.NewIconCache(resourceDir)
 
 	mobPlayer := tree.Derive("/mob", "/mob/player").(*platform.Mob)
-	mobPlayer.Appearance.Icon = "player.dmi"
+	mobPlayer.Appearance.Icon = icons.LoadOrPanic("player.dmi")
 
 	mobRat := tree.Derive("/mob", "/mob/rat").(*platform.Mob)
-	mobRat.Appearance.Icon = "rat.dmi"
+	mobRat.Appearance.Icon = icons.LoadOrPanic("rat.dmi")
 
 	turfFloor := tree.Derive("/turf", "/turf/floor").(*platform.Turf)
-	turfFloor.Appearance.Icon = "floor.dmi"
+	turfFloor.Appearance.Icon = icons.LoadOrPanic("floor.dmi")
 
 	turfWall := tree.Derive("/turf", "/turf/wall").(*platform.Turf)
-	turfWall.Appearance.Icon = "wall.dmi"
+	turfWall.Appearance.Icon = icons.LoadOrPanic("wall.dmi")
 	turfWall.Density = true
 	turfWall.Opacity = true
 
 	objCheese := tree.Derive("/obj", "/obj/cheese").(*platform.Obj)
-	objCheese.Appearance.Icon = "cheese.dmi"
+	objCheese.Appearance.Icon = icons.LoadOrPanic("cheese.dmi")
 
 	objScroll := tree.Derive("/obj", "/obj/scroll").(*platform.Obj)
-	objScroll.Appearance.Icon = "scroll.dmi"
+	objScroll.Appearance.Icon = icons.LoadOrPanic("scroll.dmi")
 
 	tree.Derive("/area", "/area/outside")
 	tree.Derive("/area", "/area/cave")
@@ -39,7 +41,7 @@ func BuildTree() *datum.TypeTree {
 
 func BuildWorld() *platform.World {
 	_, resources := websession.ParseFlags()
-	world := platform.NewWorld(BuildTree(), "Your First World", "/mob/player", "/client")
+	world := platform.NewWorld(BuildTree(resources), "Your First World", "/mob/player", "/client")
 	err := worldmap.LoadMapFromFile(world, path.Join(resources, "../map.dmm"))
 	if err != nil {
 		panic("cannot load world: " + err.Error())
