@@ -5,6 +5,7 @@ import (
 	"github.com/celskeggs/mediator/platform/datum"
 	"github.com/celskeggs/mediator/platform/worldmap"
 	"github.com/celskeggs/mediator/websession"
+	"path"
 )
 
 func BuildTree() *datum.TypeTree {
@@ -37,8 +38,9 @@ func BuildTree() *datum.TypeTree {
 }
 
 func BuildWorld() *platform.World {
+	_, resources := websession.ParseFlags()
 	world := platform.NewWorld(BuildTree(), "Your First World", "/mob/player", "/client")
-	err := worldmap.LoadMapFromFile(world, "map.dmm")
+	err := worldmap.LoadMapFromFile(world, path.Join(resources, "../map.dmm"))
 	if err != nil {
 		panic("cannot load world: " + err.Error())
 	}
@@ -46,9 +48,9 @@ func BuildWorld() *platform.World {
 }
 
 func main() {
-	world := BuildWorld()
-
 	websession.SetDefaultFlags("../resources", "icons")
+
+	world := BuildWorld()
 
 	websession.LaunchServerFromFlags(world.ServerAPI())
 }
