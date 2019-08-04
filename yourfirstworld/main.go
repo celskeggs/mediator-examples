@@ -48,6 +48,7 @@ func BuildWorld() *platform.World {
 	if err != nil {
 		panic("cannot load world: " + err.Error())
 	}
+	world.UpdateDefaultViewDistance()
 	return world
 }
 
