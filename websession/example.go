@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/celskeggs/mediator/webclient"
 	"github.com/celskeggs/mediator/webclient/sprite"
 	"github.com/celskeggs/mediator/websession"
 	"time"
@@ -44,7 +45,7 @@ func (e ExamplePlayer) Remove() {
 	// nothing to do
 }
 
-func (e ExamplePlayer) Command(cmd websession.Command) {
+func (e ExamplePlayer) Command(cmd webclient.Command) {
 	// nothing to do
 }
 

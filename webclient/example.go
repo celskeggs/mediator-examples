@@ -37,17 +37,8 @@ func (e ExampleSession) Close() {
 	log.Println("closed session: ", e.ID)
 }
 
-type MessageHolder struct {
-	Test string
-}
-
-func (e ExampleSession) NewMessageHolder() interface{} {
-	return &MessageHolder{}
-}
-
-func (e ExampleSession) OnMessage(message interface{}) {
-	mh := message.(*MessageHolder)
-	log.Println("got message holder for: ", e.ID, " with message ", mh.Test)
+func (e ExampleSession) OnMessage(message webclient.Command) {
+	log.Println("got verb:", message.Verb)
 }
 
 func (e ExampleSession) BeginSend(send func(*sprite.SpriteView) error) {
