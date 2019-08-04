@@ -3,16 +3,13 @@ package main
 import (
 	"github.com/celskeggs/mediator/platform"
 	"github.com/celskeggs/mediator/platform/datum"
+	"github.com/celskeggs/mediator/platform/framework"
 	"github.com/celskeggs/mediator/platform/icon"
-	"github.com/celskeggs/mediator/platform/worldmap"
-	"github.com/celskeggs/mediator/websession"
-	"path"
 )
 
-func BuildTree(resourceDir string) *datum.TypeTree {
-	tree := platform.NewAtomicTree()
-	icons := icon.NewIconCache(resourceDir)
+type YourFirstWorld struct{}
 
+func (YourFirstWorld) ElaborateTree(tree *datum.TypeTree, icons *icon.IconCache) {
 	mobPlayer := tree.Derive("/mob", "/mob/player").(*platform.Mob)
 	mobPlayer.Appearance.Icon = icons.LoadOrPanic("player.dmi")
 
@@ -35,27 +32,17 @@ func BuildTree(resourceDir string) *datum.TypeTree {
 
 	tree.Derive("/area", "/area/outside")
 	tree.Derive("/area", "/area/cave")
-
-	return tree
 }
 
-func BuildWorld() *platform.World {
-	_, resources := websession.ParseFlags()
-	world := platform.NewWorld(BuildTree(resources))
+func (YourFirstWorld) BeforeMap(world *platform.World) {
 	world.Name = "Your First World"
 	world.Mob = "/mob/player"
-	err := worldmap.LoadMapFromFile(world, path.Join(resources, "../map.dmm"))
-	if err != nil {
-		panic("cannot load world: " + err.Error())
-	}
-	world.UpdateDefaultViewDistance()
-	return world
 }
 
 func main() {
-	websession.SetDefaultFlags("../resources", "icons")
-
-	world := BuildWorld()
-
-	websession.LaunchServerFromFlags(world.ServerAPI())
+	framework.Launch(YourFirstWorld{}, framework.ResourceDefaults{
+		CoreResourcesDir: "../resources",
+		IconsDir:         "icons",
+		MapPath:          "map.dmm",
+	})
 }

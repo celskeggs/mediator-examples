@@ -17,12 +17,14 @@ The easiest way to try this is to 'go get' the package.
 
     $ go get github.com/celskeggs/mediator-examples/yourfirstworld/
     $ yourfirstworld -core "$GOPATH/src/github.com/celskeggs/mediator/resources/" \
-                     -resources "$GOPATH/src/github.com/celskeggs/mediator-examples/yourfirstworld/icons/"
+                     -resources "$GOPATH/src/github.com/celskeggs/mediator-examples/yourfirstworld/icons/" \
+                     -map "$GOPATH/src/github.com/celskeggs/mediator-examples/yourfirstworld/map.dmm"
 
-To run the example, you need to point it at the two resource directories shown above, which represent:
+To run the example, you need to point it at the three resource locations shown above, which represent:
 
  * "core": the webclient resources, such as the HTML, JS, and CSS code for the webclient
  * "resources": the game-specified resources, such as icons
+ * "map": the location of the BYOND DMM map
 
 ## Disclaimer
 
