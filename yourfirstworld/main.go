@@ -41,7 +41,9 @@ func BuildTree(resourceDir string) *datum.TypeTree {
 
 func BuildWorld() *platform.World {
 	_, resources := websession.ParseFlags()
-	world := platform.NewWorld(BuildTree(resources), "Your First World", "/mob/player", "/client")
+	world := platform.NewWorld(BuildTree(resources))
+	world.Name = "Your First World"
+	world.Mob = "/mob/player"
 	err := worldmap.LoadMapFromFile(world, path.Join(resources, "../map.dmm"))
 	if err != nil {
 		panic("cannot load world: " + err.Error())

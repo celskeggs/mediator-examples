@@ -24,9 +24,9 @@ func (e *ExampleAPI) SubscribeToUpdates() <-chan struct{} {
 
 func (e *ExampleAPI) MoveTheCheese() {
 	for {
-		time.Sleep(time.Second / 10)
-		e.Cheese.X += 10
-		if e.Cheese.X >= 600 {
+		time.Sleep(time.Second / 50)
+		e.Cheese.X += 1
+		if e.Cheese.X >= 270 {
 			e.Cheese.X = 40
 		}
 		e.Updates <- struct{}{}
@@ -51,6 +51,8 @@ func (e ExamplePlayer) Command(cmd webclient.Command) {
 
 func (e ExamplePlayer) Render() sprite.SpriteView {
 	return sprite.SpriteView{
+		ViewPortWidth:  320,
+		ViewPortHeight: 240,
 		Sprites: []sprite.GameSprite{
 			e.API.Cheese,
 		},
@@ -61,8 +63,8 @@ func main() {
 	api := &ExampleAPI{
 		Cheese: sprite.GameSprite{
 			Icon: "cheese.dmi",
-			X:    300,
-			Y:    100,
+			X:    150,
+			Y:    50,
 		},
 		Updates: make(chan struct{}),
 	}
