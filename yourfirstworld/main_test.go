@@ -5,7 +5,16 @@ import (
 	"github.com/stretchr/testify/assert"
 	"runtime"
 	"testing"
+	"github.com/celskeggs/mediator/platform/framework"
 )
+
+func BuildWorld() *platform.World {
+	return framework.BuildWorld(YourFirstWorld{}, framework.ResourceDefaults{
+		CoreResourcesDir: "../resources",
+		IconsDir:         "icons",
+		MapPath:          "map.dmm",
+	}, false)
+}
 
 func TestTurfLocation(t *testing.T) {
 	world := BuildWorld()
