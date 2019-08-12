@@ -7,7 +7,9 @@ import (
 	"github.com/celskeggs/mediator/platform/icon"
 )
 
-type YourFirstWorld struct{}
+type YourFirstWorld struct{
+	platform.BaseTreeDefiner
+}
 
 func (YourFirstWorld) ElaborateTree(tree *datum.TypeTree, icons *icon.IconCache) {
 	mobPlayer := tree.Derive("/mob", "/mob/player").(*platform.Mob)
@@ -37,6 +39,10 @@ func (YourFirstWorld) ElaborateTree(tree *datum.TypeTree, icons *icon.IconCache)
 func (YourFirstWorld) BeforeMap(world *platform.World) {
 	world.Name = "Your First World"
 	world.Mob = "/mob/player"
+}
+
+func (y YourFirstWorld) Definer() platform.TreeDefiner {
+	return y
 }
 
 func main() {
