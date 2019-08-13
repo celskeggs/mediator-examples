@@ -6,6 +6,7 @@ import (
 	"runtime"
 	"testing"
 	"github.com/celskeggs/mediator/platform/framework"
+	"github.com/celskeggs/mediator/platform/datum"
 )
 
 func BuildWorld() *platform.World {
@@ -92,4 +93,38 @@ func TestWorldRender(t *testing.T) {
 	runtime.GC()
 	view2 := player.Render()
 	assert.True(t, len(view2.Sprites) == len(view.Sprites))
+}
+
+func TestSingletons(t *testing.T) {
+	tree := platform.NewAtomicTree(platform.BaseTreeDefiner{})
+	areaOne := tree.New("/area")
+	areaTwo := tree.New("/area")
+	assert.True(t, areaOne == areaTwo)
+	assert.True(t, areaOne.Impl() == areaTwo.Impl())
+}
+
+func TestSingletonsInWorld(t *testing.T) {
+	world := BuildWorld()
+	areaOne := world.Tree.New("/area")
+	areaTwo := world.Tree.New("/area")
+	assert.True(t, areaOne == areaTwo)
+	assert.True(t, areaOne.Impl() == areaTwo.Impl())
+}
+
+func TestSingletonAreas(t *testing.T) {
+	world := BuildWorld()
+	areas := world.FindAll(func(atom platform.IAtom) bool {
+		_, isarea := atom.(platform.IArea)
+		return isarea
+	})
+	pathCount := map[datum.TypePath]int{}
+	for _, area := range areas {
+		pathCount[area.AsDatum().Type] += 1
+	}
+	assert.Equal(t, 2, len(pathCount))
+	assert.Equal(t, 1, pathCount["/area/outside"])
+	assert.Equal(t, 1, pathCount["/area/cave"])
+	for _, count := range pathCount {
+		assert.Equal(t, 1, count)
+	}
 }

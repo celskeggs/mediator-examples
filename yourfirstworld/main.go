@@ -5,35 +5,54 @@ import (
 	"github.com/celskeggs/mediator/platform/datum"
 	"github.com/celskeggs/mediator/platform/framework"
 	"github.com/celskeggs/mediator/platform/icon"
+	"github.com/celskeggs/mediator/util"
 )
 
-type YourFirstWorld struct{
+type YourFirstWorld struct {
 	platform.BaseTreeDefiner
 }
 
-func (YourFirstWorld) ElaborateTree(tree *datum.TypeTree, icons *icon.IconCache) {
-	mobPlayer := tree.Derive("/mob", "/mob/player").(*platform.Mob)
-	mobPlayer.AsAtom().Appearance.Icon = icons.LoadOrPanic("player.dmi")
+type IMobPlayer interface {
+	platform.IMob
+}
 
-	mobRat := tree.Derive("/mob", "/mob/rat").(*platform.Mob)
+type MobPlayer struct {
+	platform.IMob
+}
+
+var _ IMobPlayer = &MobPlayer{}
+
+func (YourFirstWorld) ElaborateTree(tree *datum.TypeTree, icons *icon.IconCache) {
+	mobPlayer := &MobPlayer{
+		IMob: tree.DeriveNew("/mob").(platform.IMob),
+	}
+	mobPlayer.AsAtom().Appearance.Icon = icons.LoadOrPanic("player.dmi")
+	tree.RegisterStruct("/mob/player", mobPlayer)
+
+	mobRat := tree.Derive("/mob", "/mob/rat").(platform.IMob)
 	mobRat.AsAtom().Appearance.Icon = icons.LoadOrPanic("rat.dmi")
 
-	turfFloor := tree.Derive("/turf", "/turf/floor").(*platform.Turf)
+	turfFloor := tree.Derive("/turf", "/turf/floor").(platform.ITurf)
 	turfFloor.AsAtom().Appearance.Icon = icons.LoadOrPanic("floor.dmi")
 
-	turfWall := tree.Derive("/turf", "/turf/wall").(*platform.Turf)
+	turfWall := tree.Derive("/turf", "/turf/wall").(platform.ITurf)
 	turfWall.AsAtom().Appearance.Icon = icons.LoadOrPanic("wall.dmi")
 	turfWall.AsAtom().Density = true
 	turfWall.AsAtom().Opacity = true
 
-	objCheese := tree.Derive("/obj", "/obj/cheese").(*platform.Obj)
+	objCheese := tree.Derive("/obj", "/obj/cheese").(platform.IObj)
 	objCheese.AsAtom().Appearance.Icon = icons.LoadOrPanic("cheese.dmi")
 
-	objScroll := tree.Derive("/obj", "/obj/scroll").(*platform.Obj)
+	objScroll := tree.Derive("/obj", "/obj/scroll").(platform.IObj)
 	objScroll.AsAtom().Appearance.Icon = icons.LoadOrPanic("scroll.dmi")
 
-	tree.Derive("/area", "/area/outside")
-	tree.Derive("/area", "/area/cave")
+	areaOutside := tree.Derive("/area", "/area/outside").(platform.IArea)
+	areaOutside.AsAtom().Appearance.Desc = "Nice and jazzy, here..."
+	ExtractCustomArea(areaOutside).AsCustomArea().Music = "jazzy.mid"
+
+	areaCave := tree.Derive("/area", "/area/cave").(platform.IArea)
+	areaCave.AsAtom().Appearance.Desc = "Watch out for the giant rat!"
+	ExtractCustomArea(areaOutside).AsCustomArea().Music = "cavern.mid"
 }
 
 func (YourFirstWorld) BeforeMap(world *platform.World) {
