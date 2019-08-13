@@ -22,6 +22,63 @@ type MobPlayer struct {
 
 var _ IMobPlayer = &MobPlayer{}
 
+type ICustomArea interface {
+	platform.IArea
+	AsCustomArea() *CustomArea
+}
+
+type CustomArea struct {
+	platform.IArea
+	Music string
+}
+
+var _ ICustomArea = &CustomArea{}
+
+func (d CustomArea) RawClone() datum.IDatum {
+	d.IArea = d.IArea.RawClone().(platform.IArea)
+	return &d
+}
+
+func (d *CustomArea) AsCustomArea() *CustomArea {
+	return d
+}
+
+func (d *CustomArea) Entered(atom platform.IAtomMovable, oldloc platform.IAtom) {
+	if mob, ismob := atom.(platform.IMob); ismob {
+		mob.OutputString(d.AsAtom().Appearance.Desc)
+		util.FIXME("use actual sounds, not just strings")
+		mob.OutputSound(d.World().Sound(d.Music, true, false, 1, 100))
+	}
+}
+
+func (d *CustomArea) NextOverride() (this datum.IDatum, next datum.IDatum) {
+	return d, d.IArea
+}
+
+func ExtractCustomArea(area platform.IArea) ICustomArea {
+	datum.AssertConsistent(area)
+
+	var iter datum.IDatum = area
+	for {
+		cur, next := iter.NextOverride()
+		if ca, ok := cur.(ICustomArea); ok {
+			return ca
+		}
+		if iter == nil {
+			panic("area does not implement CustomArea")
+		}
+		iter = next
+	}
+}
+
+func (y YourFirstWorld) AreaTemplate(parent platform.IAtom) platform.IArea {
+	area := y.BaseTreeDefiner.AreaTemplate(parent)
+	return &CustomArea{
+		IArea: area,
+		Music: "",
+	}
+}
+
 func (YourFirstWorld) ElaborateTree(tree *datum.TypeTree, icons *icon.IconCache) {
 	mobPlayer := &MobPlayer{
 		IMob: tree.DeriveNew("/mob").(platform.IMob),
