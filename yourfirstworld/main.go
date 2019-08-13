@@ -22,6 +22,8 @@ type MobPlayer struct {
 
 var _ IMobPlayer = &MobPlayer{}
 
+///// ***** CustomArea
+
 type ICustomArea interface {
 	platform.IArea
 	AsCustomArea() *CustomArea
