@@ -34,7 +34,8 @@ func (e *ExampleAPI) MoveTheCheese() {
 }
 
 type ExamplePlayer struct {
-	API *ExampleAPI
+	API   *ExampleAPI
+	Lines []string
 }
 
 func (e ExamplePlayer) IsValid() bool {
@@ -45,8 +46,8 @@ func (e ExamplePlayer) Remove() {
 	// nothing to do
 }
 
-func (e ExamplePlayer) Command(cmd webclient.Command) {
-	// nothing to do
+func (e *ExamplePlayer) Command(cmd webclient.Command) {
+	e.Lines = append(e.Lines, "got verb " + cmd.Verb)
 }
 
 func (e ExamplePlayer) Render() sprite.SpriteView {
@@ -57,6 +58,12 @@ func (e ExamplePlayer) Render() sprite.SpriteView {
 			e.API.Cheese,
 		},
 	}
+}
+
+func (e *ExamplePlayer) PullText() (lines []string) {
+	lines = e.Lines
+	e.Lines = nil
+	return lines
 }
 
 func main() {

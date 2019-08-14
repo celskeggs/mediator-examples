@@ -145,7 +145,9 @@ func TestWalkBetweenAreas(t *testing.T) {
 	assert.Equal(t, datum.TypePath("/area/outside"), player.ContainingArea().AsDatum().Type)
 
 	playerAPI.Command(webclient.Command{Verb: ".west"})
-	util.FIXME("test that output was produced and that sound was produced")
+	lines := playerAPI.PullText()
+	assert.Contains(t, lines, "Watch out for the giant rat!")
+	util.FIXME("test that sound was produced")
 
 	assert.Equal(t, datum.TypePath("/area/cave"), player.ContainingArea().AsDatum().Type)
 }

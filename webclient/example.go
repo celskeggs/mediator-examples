@@ -33,6 +33,8 @@ type ExampleSession struct {
 	ID uint
 }
 
+var _ webclient.ServerSession = &ExampleSession{}
+
 func (e ExampleSession) Close() {
 	log.Println("closed session: ", e.ID)
 }
@@ -41,19 +43,21 @@ func (e ExampleSession) OnMessage(message webclient.Command) {
 	log.Println("got verb:", message.Verb)
 }
 
-func (e ExampleSession) BeginSend(send func(*sprite.SpriteView) error) {
+func (e ExampleSession) BeginSend(send func(update *sprite.ViewUpdate) error) {
 	go func() {
 		defer func() {
 			_ = send(nil)
 		}()
 		for {
 			log.Println("sending first message for: ", e.ID)
-			if send(&sprite.SpriteView{
-				Sprites: []sprite.GameSprite{
-					{
-						Icon: "cheese.dmi",
-						X:    128,
-						Y:    128,
+			if send(&sprite.ViewUpdate{
+				NewState: &sprite.SpriteView{
+					Sprites: []sprite.GameSprite{
+						{
+							Icon: "cheese.dmi",
+							X:    128,
+							Y:    128,
+						},
 					},
 				},
 			}) != nil {
@@ -61,12 +65,14 @@ func (e ExampleSession) BeginSend(send func(*sprite.SpriteView) error) {
 			}
 			log.Println("sent message for: ", e.ID)
 			time.Sleep(time.Second / 2)
-			if send(&sprite.SpriteView{
-				Sprites: []sprite.GameSprite{
-					{
-						Icon: "cheese.dmi",
-						X:    128,
-						Y:    192,
+			if send(&sprite.ViewUpdate{
+				NewState: &sprite.SpriteView{
+					Sprites: []sprite.GameSprite{
+						{
+							Icon: "cheese.dmi",
+							X:    128,
+							Y:    192,
+						},
 					},
 				},
 			}) != nil {
