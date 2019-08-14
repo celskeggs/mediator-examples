@@ -7,6 +7,8 @@ import (
 	"testing"
 	"github.com/celskeggs/mediator/platform/framework"
 	"github.com/celskeggs/mediator/platform/datum"
+	"github.com/celskeggs/mediator/webclient"
+	"github.com/celskeggs/mediator/util"
 )
 
 func BuildWorld() *platform.World {
@@ -127,4 +129,23 @@ func TestSingletonAreas(t *testing.T) {
 	for _, count := range pathCount {
 		assert.Equal(t, 1, count)
 	}
+}
+
+func TestWalkBetweenAreas(t *testing.T) {
+	// 11, 4
+
+	world := BuildWorld()
+	playerAPI := world.ServerAPI().AddPlayer()
+
+	player := world.FindOne(func(atom platform.IAtom) bool {
+		return atom.AsDatum().Type == "/mob/player"
+	})
+	assert.NotNil(t, player)
+	player.SetLocation(world.LocateXYZ(11, 4, 1))
+	assert.Equal(t, datum.TypePath("/area/outside"), player.ContainingArea().AsDatum().Type)
+
+	playerAPI.Command(webclient.Command{Verb: ".west"})
+	util.FIXME("test that output was produced and that sound was produced")
+
+	assert.Equal(t, datum.TypePath("/area/cave"), player.ContainingArea().AsDatum().Type)
 }
