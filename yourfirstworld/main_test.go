@@ -53,6 +53,10 @@ func TestPlayerLocation(t *testing.T) {
 			assert.Contains(t, contents, player)
 		}
 	}
+	x, y, z := player.XYZ()
+	assert.Equal(t, uint(1), x)
+	assert.Equal(t, uint(1), y)
+	assert.Equal(t, uint(1), z)
 }
 
 func TestPlayerContinuedExistence(t *testing.T) {
@@ -150,4 +154,26 @@ func TestWalkBetweenAreas(t *testing.T) {
 	util.FIXME("test that sound was produced")
 
 	assert.Equal(t, datum.TypePath("/area/cave"), player.ContainingArea().AsDatum().Type)
+}
+
+func TestFillUpEntireMap(t *testing.T) {
+	world := BuildWorld()
+	found := false
+	serverAPI := world.ServerAPI()
+	for i := 0; i < 1000; i++ {
+		player := serverAPI.AddPlayer()
+		player.Render()
+		player.PullText()
+		player.Remove()
+		playerNowhere := world.FindOne(func(atom platform.IAtom) bool {
+			return atom.AsDatum().Type == "/mob/player" && atom.Location() == nil
+		})
+		if playerNowhere != nil {
+			// should be able to add a whole bunch of players
+			assert.True(t, i >= 50)
+			found = true
+			break
+		}
+	}
+	assert.True(t, found)
 }
