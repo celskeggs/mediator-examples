@@ -22,6 +22,11 @@ type MobPlayer struct {
 
 var _ IMobPlayer = &MobPlayer{}
 
+func (d MobPlayer) RawClone() datum.IDatum {
+	d.IMob = d.IMob.RawClone().(platform.IMob)
+	return &d
+}
+
 ///// ***** CustomArea
 
 type ICustomArea interface {
