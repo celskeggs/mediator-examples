@@ -131,7 +131,7 @@ func (y YourFirstWorld) Definer() platform.TreeDefiner {
 func main() {
 	framework.Launch(YourFirstWorld{}, framework.ResourceDefaults{
 		CoreResourcesDir: "../resources",
-		IconsDir:         "icons",
+		IconsDir:         "resources",
 		MapPath:          "map.dmm",
 	})
 }

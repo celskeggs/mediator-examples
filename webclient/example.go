@@ -11,10 +11,10 @@ type ExampleServer struct {
 	LastID uint
 }
 
-func (e ExampleServer) ListResources() (map[string]string, error) {
+func (e ExampleServer) ListResources() (map[string]string, []string, error) {
 	return map[string]string{
 		"cheese.dmi": "../yourfirstworld/icons/cheese.dmi",
-	}, nil
+	}, []string{"cheese.dmi"}, nil
 }
 
 func (e ExampleServer) CoreResourcePath() string {
