@@ -112,11 +112,11 @@ func (YourFirstWorld) ElaborateTree(tree *datum.TypeTree, icons *icon.IconCache)
 
 	areaOutside := tree.Derive("/area", "/area/outside").(platform.IArea)
 	areaOutside.AsAtom().Appearance.Desc = "Nice and jazzy, here..."
-	ExtractCustomArea(areaOutside).AsCustomArea().Music = "jazzy.mid"
+	ExtractCustomArea(areaOutside).AsCustomArea().Music = "jazzy.ogg"
 
 	areaCave := tree.Derive("/area", "/area/cave").(platform.IArea)
 	areaCave.AsAtom().Appearance.Desc = "Watch out for the giant rat!"
-	ExtractCustomArea(areaCave).AsCustomArea().Music = "cavern.mid"
+	ExtractCustomArea(areaCave).AsCustomArea().Music = "cavern.ogg"
 }
 
 func (YourFirstWorld) BeforeMap(world *platform.World) {

@@ -76,7 +76,7 @@ func main() {
 		Updates: make(chan struct{}),
 	}
 	go api.MoveTheCheese()
-	err := websession.LaunchServer(api, "../resources", "../yourfirstworld/icons")
+	err := websession.LaunchServer(api, "../resources", "../yourfirstworld/resources", "cache")
 	// should not get here
 	panic(err)
 }

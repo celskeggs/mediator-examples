@@ -13,7 +13,7 @@ import (
 func BuildWorld() *platform.World {
 	return framework.BuildWorld(YourFirstWorld{}, framework.ResourceDefaults{
 		CoreResourcesDir: "../resources",
-		IconsDir:         "icons",
+		IconsDir:         "resources",
 		MapPath:          "map.dmm",
 	}, false)
 }
@@ -151,7 +151,7 @@ func TestWalkBetweenAreas(t *testing.T) {
 	lines, sounds := playerAPI.PullRequests()
 	assert.Contains(t, lines, "Watch out for the giant rat!")
 	assert.Equal(t, 1, len(sounds))
-	assert.Equal(t, "cavern.mid", sounds[0].File)
+	assert.Equal(t, "cavern.ogg", sounds[0].File)
 
 	assert.Equal(t, datum.TypePath("/area/cave"), player.ContainingArea().AsDatum().Type)
 }
