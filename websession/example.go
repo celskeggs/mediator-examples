@@ -47,7 +47,7 @@ func (e ExamplePlayer) Remove() {
 }
 
 func (e *ExamplePlayer) Command(cmd webclient.Command) {
-	e.Lines = append(e.Lines, "got verb " + cmd.Verb)
+	e.Lines = append(e.Lines, "got verb "+cmd.Verb)
 }
 
 func (e ExamplePlayer) Render() sprite.SpriteView {
@@ -60,10 +60,10 @@ func (e ExamplePlayer) Render() sprite.SpriteView {
 	}
 }
 
-func (e *ExamplePlayer) PullText() (lines []string) {
+func (e *ExamplePlayer) PullRequests() (lines []string, sounds []sprite.Sound) {
 	lines = e.Lines
 	e.Lines = nil
-	return lines
+	return lines, nil
 }
 
 func main() {

@@ -8,7 +8,6 @@ import (
 	"github.com/celskeggs/mediator/platform/framework"
 	"github.com/celskeggs/mediator/platform/datum"
 	"github.com/celskeggs/mediator/webclient"
-	"github.com/celskeggs/mediator/util"
 )
 
 func BuildWorld() *platform.World {
@@ -149,9 +148,10 @@ func TestWalkBetweenAreas(t *testing.T) {
 	assert.Equal(t, datum.TypePath("/area/outside"), player.ContainingArea().AsDatum().Type)
 
 	playerAPI.Command(webclient.Command{Verb: ".west"})
-	lines := playerAPI.PullText()
+	lines, sounds := playerAPI.PullRequests()
 	assert.Contains(t, lines, "Watch out for the giant rat!")
-	util.FIXME("test that sound was produced")
+	assert.Equal(t, 1, len(sounds))
+	assert.Equal(t, "cavern.mid", sounds[0].File)
 
 	assert.Equal(t, datum.TypePath("/area/cave"), player.ContainingArea().AsDatum().Type)
 }
@@ -163,7 +163,7 @@ func TestFillUpEntireMap(t *testing.T) {
 	for i := 0; i < 1000; i++ {
 		player := serverAPI.AddPlayer()
 		player.Render()
-		player.PullText()
+		player.PullRequests()
 		player.Remove()
 		playerNowhere := world.FindOne(func(atom platform.IAtom) bool {
 			return atom.AsDatum().Type == "/mob/player" && atom.Location() == nil
