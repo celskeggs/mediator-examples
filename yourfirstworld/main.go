@@ -5,7 +5,7 @@ import (
 	"github.com/celskeggs/mediator/platform/datum"
 	"github.com/celskeggs/mediator/platform/framework"
 	"github.com/celskeggs/mediator/platform/icon"
-	"github.com/celskeggs/mediator/util"
+	"github.com/celskeggs/mediator/platform/format"
 )
 
 type YourFirstWorld struct {
@@ -28,8 +28,7 @@ func (d MobPlayer) RawClone() datum.IDatum {
 }
 
 func (d *MobPlayer) Bump(obstacle platform.IAtom) {
-	util.FIXME("actually include the obstacle")
-	d.OutputString("You bump into [obstacle]")
+	d.OutputString(format.Format("You bump into [].", obstacle))
 	d.OutputSound(d.World().Sound("ouch.wav", false, false, 0, 100))
 }
 
@@ -95,31 +94,39 @@ func (YourFirstWorld) ElaborateTree(tree *datum.TypeTree, icons *icon.IconCache)
 	mobPlayer := &MobPlayer{
 		IMob: tree.DeriveNew("/mob").(platform.IMob),
 	}
+	mobPlayer.AsAtom().Appearance.Name = "player"
 	mobPlayer.AsAtom().Appearance.Icon = icons.LoadOrPanic("player.dmi")
 	tree.RegisterStruct("/mob/player", mobPlayer)
 
 	mobRat := tree.Derive("/mob", "/mob/rat").(platform.IMob)
+	mobRat.AsAtom().Appearance.Name = "rat"
 	mobRat.AsAtom().Appearance.Icon = icons.LoadOrPanic("rat.dmi")
 
 	turfFloor := tree.Derive("/turf", "/turf/floor").(platform.ITurf)
+	turfFloor.AsAtom().Appearance.Name = "floor"
 	turfFloor.AsAtom().Appearance.Icon = icons.LoadOrPanic("floor.dmi")
 
 	turfWall := tree.Derive("/turf", "/turf/wall").(platform.ITurf)
+	turfWall.AsAtom().Appearance.Name = "wall"
 	turfWall.AsAtom().Appearance.Icon = icons.LoadOrPanic("wall.dmi")
 	turfWall.AsAtom().Density = true
 	turfWall.AsAtom().Opacity = true
 
 	objCheese := tree.Derive("/obj", "/obj/cheese").(platform.IObj)
+	objCheese.AsAtom().Appearance.Name = "cheese"
 	objCheese.AsAtom().Appearance.Icon = icons.LoadOrPanic("cheese.dmi")
 
 	objScroll := tree.Derive("/obj", "/obj/scroll").(platform.IObj)
+	objScroll.AsAtom().Appearance.Name = "scroll"
 	objScroll.AsAtom().Appearance.Icon = icons.LoadOrPanic("scroll.dmi")
 
 	areaOutside := tree.Derive("/area", "/area/outside").(platform.IArea)
+	areaOutside.AsAtom().Appearance.Name = "outside"
 	areaOutside.AsAtom().Appearance.Desc = "Nice and jazzy, here..."
 	ExtractCustomArea(areaOutside).AsCustomArea().Music = "jazzy.ogg"
 
 	areaCave := tree.Derive("/area", "/area/cave").(platform.IArea)
+	areaOutside.AsAtom().Appearance.Name = "cave"
 	areaCave.AsAtom().Appearance.Desc = "Watch out for the giant rat!"
 	ExtractCustomArea(areaCave).AsCustomArea().Music = "cavern.ogg"
 }
