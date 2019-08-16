@@ -5,7 +5,6 @@ import (
 	"github.com/celskeggs/mediator/platform/datum"
 	"github.com/celskeggs/mediator/platform/framework"
 	"github.com/celskeggs/mediator/platform/icon"
-	"github.com/celskeggs/mediator/util"
 )
 
 type YourFirstWorld struct {
@@ -53,7 +52,6 @@ func (d *CustomArea) AsCustomArea() *CustomArea {
 func (d *CustomArea) Entered(atom platform.IAtomMovable, oldloc platform.IAtom) {
 	if mob, ismob := atom.(platform.IMob); ismob {
 		mob.OutputString(d.AsAtom().Appearance.Desc)
-		util.FIXME("use actual sounds, not just strings")
 		mob.OutputSound(d.World().Sound(d.Music, true, false, 1, 100))
 	}
 }

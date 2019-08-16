@@ -13,7 +13,7 @@ type ExampleServer struct {
 
 func (e ExampleServer) ListResources() (map[string]string, []string, error) {
 	return map[string]string{
-		"cheese.dmi": "../yourfirstworld/icons/cheese.dmi",
+		"cheese.dmi": "../yourfirstworld/resources/cheese.dmi",
 	}, []string{"cheese.dmi"}, nil
 }
 
