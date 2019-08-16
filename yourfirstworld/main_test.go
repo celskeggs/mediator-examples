@@ -147,8 +147,15 @@ func TestWalkBetweenAreas(t *testing.T) {
 	player.SetLocation(world.LocateXYZ(11, 4, 1))
 	assert.Equal(t, datum.TypePath("/area/outside"), player.ContainingArea().AsDatum().Type)
 
-	playerAPI.Command(webclient.Command{Verb: ".west"})
 	lines, sounds := playerAPI.PullRequests()
+	assert.Equal(t, 1, len(lines))
+	assert.Contains(t, lines, "Nice and jazzy, here...")
+	assert.Equal(t, 1, len(sounds))
+	assert.Equal(t, "jazzy.ogg", sounds[0].File)
+
+	playerAPI.Command(webclient.Command{Verb: ".west"})
+	lines, sounds = playerAPI.PullRequests()
+	assert.Equal(t, 1, len(lines))
 	assert.Contains(t, lines, "Watch out for the giant rat!")
 	assert.Equal(t, 1, len(sounds))
 	assert.Equal(t, "cavern.ogg", sounds[0].File)
