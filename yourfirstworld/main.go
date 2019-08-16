@@ -5,6 +5,7 @@ import (
 	"github.com/celskeggs/mediator/platform/datum"
 	"github.com/celskeggs/mediator/platform/framework"
 	"github.com/celskeggs/mediator/platform/icon"
+	"github.com/celskeggs/mediator/util"
 )
 
 type YourFirstWorld struct {
@@ -24,6 +25,12 @@ var _ IMobPlayer = &MobPlayer{}
 func (d MobPlayer) RawClone() datum.IDatum {
 	d.IMob = d.IMob.RawClone().(platform.IMob)
 	return &d
+}
+
+func (d *MobPlayer) Bump(obstacle platform.IAtom) {
+	util.FIXME("actually include the obstacle")
+	d.OutputString("You bump into [obstacle]")
+	d.OutputSound(d.World().Sound("ouch.wav", false, false, 0, 100))
 }
 
 ///// ***** CustomArea
