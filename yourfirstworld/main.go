@@ -8,12 +8,15 @@ import (
 	"github.com/celskeggs/mediator/platform/format"
 )
 
-type YourFirstWorld struct {
+type DefinedWorld struct {
 	platform.BaseTreeDefiner
 }
 
+///// ***** MobPlayer
+
 type IMobPlayer interface {
 	platform.IMob
+	AsMobPlayer() *MobPlayer
 }
 
 type MobPlayer struct {
@@ -27,9 +30,13 @@ func (d MobPlayer) RawClone() datum.IDatum {
 	return &d
 }
 
-func (d *MobPlayer) Bump(obstacle platform.IAtom) {
-	d.OutputString(format.Format("You bump into [].", obstacle))
-	d.OutputSound(d.World().Sound("ouch.wav", false, false, 0, 100))
+func (d *MobPlayer) AsMobPlayer() *MobPlayer {
+	return d
+}
+
+func (this *MobPlayer) Bump(obstacle platform.IAtom) {
+	this.OutputString(format.Format("You bump into [].", obstacle))
+	this.OutputSound(this.World().Sound("ouch.wav", false, false, 0, 100))
 }
 
 ///// ***** CustomArea
@@ -55,93 +62,93 @@ func (d *CustomArea) AsCustomArea() *CustomArea {
 	return d
 }
 
-func (d *CustomArea) Entered(atom platform.IAtomMovable, oldloc platform.IAtom) {
-	if mob, ismob := atom.(platform.IMob); ismob {
-		mob.OutputString(d.AsAtom().Appearance.Desc)
-		mob.OutputSound(d.World().Sound(d.Music, true, false, 1, 100))
-	}
-}
-
 func (d *CustomArea) NextOverride() (this datum.IDatum, next datum.IDatum) {
 	return d, d.IArea
 }
 
-func ExtractCustomArea(area platform.IArea) ICustomArea {
-	datum.AssertConsistent(area)
+func CastCustomArea(base platform.IArea) ICustomArea {
+	datum.AssertConsistent(base)
 
-	var iter datum.IDatum = area
+	var iter datum.IDatum = base
 	for {
 		cur, next := iter.NextOverride()
 		if ca, ok := cur.(ICustomArea); ok {
 			return ca
 		}
-		if iter == nil {
-			panic("area does not implement CustomArea")
-		}
 		iter = next
+		if iter == nil {
+			panic("type does not implement CustomArea")
+		}
 	}
 }
 
-func (y YourFirstWorld) AreaTemplate(parent platform.IAtom) platform.IArea {
-	area := y.BaseTreeDefiner.AreaTemplate(parent)
+func (d DefinedWorld) AreaTemplate(parent platform.IAtom) platform.IArea {
+	base := d.BaseTreeDefiner.AreaTemplate(parent)
 	return &CustomArea{
-		IArea: area,
+		IArea: base,
 		Music: "",
 	}
 }
 
-func (YourFirstWorld) ElaborateTree(tree *datum.TypeTree, icons *icon.IconCache) {
-	mobPlayer := &MobPlayer{
-		IMob: tree.DeriveNew("/mob").(platform.IMob),
+func (this *CustomArea) Entered(atom platform.IAtomMovable, oldloc platform.IAtom) {
+	if mob, ismob := atom.(platform.IMob); ismob {
+		mob.OutputString(this.AsAtom().Appearance.Desc)
+		mob.OutputSound(this.World().Sound(this.Music, true, false, 1, 100))
 	}
-	mobPlayer.AsAtom().Appearance.Name = "player"
-	mobPlayer.AsAtom().Appearance.Icon = icons.LoadOrPanic("player.dmi")
-	tree.RegisterStruct("/mob/player", mobPlayer)
-
-	mobRat := tree.Derive("/mob", "/mob/rat").(platform.IMob)
-	mobRat.AsAtom().Appearance.Name = "rat"
-	mobRat.AsAtom().Appearance.Icon = icons.LoadOrPanic("rat.dmi")
-
-	turfFloor := tree.Derive("/turf", "/turf/floor").(platform.ITurf)
-	turfFloor.AsAtom().Appearance.Name = "floor"
-	turfFloor.AsAtom().Appearance.Icon = icons.LoadOrPanic("floor.dmi")
-
-	turfWall := tree.Derive("/turf", "/turf/wall").(platform.ITurf)
-	turfWall.AsAtom().Appearance.Name = "wall"
-	turfWall.AsAtom().Appearance.Icon = icons.LoadOrPanic("wall.dmi")
-	turfWall.AsAtom().Density = true
-	turfWall.AsAtom().Opacity = true
-
-	objCheese := tree.Derive("/obj", "/obj/cheese").(platform.IObj)
-	objCheese.AsAtom().Appearance.Name = "cheese"
-	objCheese.AsAtom().Appearance.Icon = icons.LoadOrPanic("cheese.dmi")
-
-	objScroll := tree.Derive("/obj", "/obj/scroll").(platform.IObj)
-	objScroll.AsAtom().Appearance.Name = "scroll"
-	objScroll.AsAtom().Appearance.Icon = icons.LoadOrPanic("scroll.dmi")
-
-	areaOutside := tree.Derive("/area", "/area/outside").(platform.IArea)
-	areaOutside.AsAtom().Appearance.Name = "outside"
-	areaOutside.AsAtom().Appearance.Desc = "Nice and jazzy, here..."
-	ExtractCustomArea(areaOutside).AsCustomArea().Music = "jazzy.ogg"
-
-	areaCave := tree.Derive("/area", "/area/cave").(platform.IArea)
-	areaOutside.AsAtom().Appearance.Name = "cave"
-	areaCave.AsAtom().Appearance.Desc = "Watch out for the giant rat!"
-	ExtractCustomArea(areaCave).AsCustomArea().Music = "cavern.ogg"
 }
 
-func (YourFirstWorld) BeforeMap(world *platform.World) {
+func (DefinedWorld) ElaborateTree(tree *datum.TypeTree, icons *icon.IconCache) {
+	prototypeMobPlayer := &MobPlayer{
+		IMob: tree.DeriveNew("/mob").(platform.IMob),
+	}
+	prototypeMobPlayer.AsAtom().Appearance.Name = "player"
+	prototypeMobPlayer.AsAtom().Appearance.Icon = icons.LoadOrPanic("player.dmi")
+	tree.RegisterStruct("/mob/player", prototypeMobPlayer)
+
+	prototypeMobRat := tree.Derive("/mob", "/mob/rat").(platform.IMob)
+	prototypeMobRat.AsAtom().Appearance.Name = "rat"
+	prototypeMobRat.AsAtom().Appearance.Icon = icons.LoadOrPanic("rat.dmi")
+
+	prototypeTurfFloor := tree.Derive("/turf", "/turf/floor").(platform.ITurf)
+	prototypeTurfFloor.AsAtom().Appearance.Name = "floor"
+	prototypeTurfFloor.AsAtom().Appearance.Icon = icons.LoadOrPanic("floor.dmi")
+
+	prototypeTurfWall := tree.Derive("/turf", "/turf/wall").(platform.ITurf)
+	prototypeTurfWall.AsAtom().Appearance.Name = "wall"
+	prototypeTurfWall.AsAtom().Appearance.Icon = icons.LoadOrPanic("wall.dmi")
+	prototypeTurfWall.AsAtom().Density = true
+	prototypeTurfWall.AsAtom().Opacity = true
+
+	prototypeObjCheese := tree.Derive("/obj", "/obj/cheese").(platform.IObj)
+	prototypeObjCheese.AsAtom().Appearance.Name = "cheese"
+	prototypeObjCheese.AsAtom().Appearance.Icon = icons.LoadOrPanic("cheese.dmi")
+
+	prototypeObjScroll := tree.Derive("/obj", "/obj/scroll").(platform.IObj)
+	prototypeObjScroll.AsAtom().Appearance.Name = "scroll"
+	prototypeObjScroll.AsAtom().Appearance.Icon = icons.LoadOrPanic("scroll.dmi")
+
+	prototypeAreaOutside := tree.Derive("/area", "/area/outside").(platform.IArea)
+	prototypeAreaOutside.AsAtom().Appearance.Name = "outside"
+	prototypeAreaOutside.AsAtom().Appearance.Desc = "Nice and jazzy, here..."
+	CastCustomArea(prototypeAreaOutside).AsCustomArea().Music = "jazzy.ogg"
+
+	prototypeAreaCave := tree.Derive("/area", "/area/cave").(platform.IArea)
+	prototypeAreaCave.AsAtom().Appearance.Name = "cave"
+	prototypeAreaCave.AsAtom().Appearance.Desc = "Watch out for the giant rat!"
+	CastCustomArea(prototypeAreaCave).AsCustomArea().Music = "cavern.ogg"
+}
+
+func (DefinedWorld) BeforeMap(world *platform.World) {
 	world.Name = "Your First World"
 	world.Mob = "/mob/player"
 }
 
-func (y YourFirstWorld) Definer() platform.TreeDefiner {
-	return y
+func (d DefinedWorld) Definer() platform.TreeDefiner {
+	return d
 }
 
 func main() {
-	framework.Launch(YourFirstWorld{}, framework.ResourceDefaults{
+	framework.Launch(DefinedWorld{}, framework.ResourceDefaults{
 		CoreResourcesDir: "../resources",
 		IconsDir:         "resources",
 		MapPath:          "map.dmm",
