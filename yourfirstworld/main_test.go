@@ -11,7 +11,7 @@ import (
 )
 
 func BuildWorld() *platform.World {
-	return framework.BuildWorld(YourFirstWorld{}, framework.ResourceDefaults{
+	return framework.BuildWorld(DefinedWorld{}, framework.ResourceDefaults{
 		CoreResourcesDir: "../resources",
 		IconsDir:         "resources",
 		MapPath:          "map.dmm",
