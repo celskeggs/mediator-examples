@@ -2,12 +2,12 @@ package main
 
 import (
 	"github.com/celskeggs/mediator/platform"
+	"github.com/celskeggs/mediator/platform/datum"
+	"github.com/celskeggs/mediator/platform/framework"
+	"github.com/celskeggs/mediator/webclient"
 	"github.com/stretchr/testify/assert"
 	"runtime"
 	"testing"
-	"github.com/celskeggs/mediator/platform/framework"
-	"github.com/celskeggs/mediator/platform/datum"
-	"github.com/celskeggs/mediator/webclient"
 )
 
 func BuildWorld() *platform.World {
