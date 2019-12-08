@@ -155,14 +155,18 @@ func TestWalkBetweenAreas(t *testing.T) {
 	assert.Equal(t, 1, len(lines))
 	assert.Contains(t, lines, "Nice and jazzy, here...")
 	assert.Equal(t, 1, len(sounds))
-	assert.Equal(t, "jazzy.ogg", sounds[0].File)
+	if len(sounds) >= 1 {
+		assert.Equal(t, "jazzy.ogg", sounds[0].File)
+	}
 
 	playerAPI.Command(webclient.Command{Verb: ".west"})
 	lines, sounds = playerAPI.PullRequests()
 	assert.Equal(t, 1, len(lines))
 	assert.Contains(t, lines, "Watch out for the giant rat!")
 	assert.Equal(t, 1, len(sounds))
-	assert.Equal(t, "cavern.ogg", sounds[0].File)
+	if len(sounds) >= 1 {
+		assert.Equal(t, "cavern.ogg", sounds[0].File)
+	}
 
 	assert.Equal(t, types.TypePath("/area/cave"), atoms.ContainingArea(player).(*types.Datum).Type())
 }
@@ -182,7 +186,9 @@ func TestStepOffMap(t *testing.T) {
 	assert.Equal(t, 1, len(lines))
 	assert.Contains(t, lines, "Nice and jazzy, here...")
 	assert.Equal(t, 1, len(sounds))
-	assert.Equal(t, "jazzy.ogg", sounds[0].File)
+	if len(sounds) >= 1 {
+		assert.Equal(t, "jazzy.ogg", sounds[0].File)
+	}
 
 	playerAPI.Command(webclient.Command{Verb: ".south"})
 	lines, sounds = playerAPI.PullRequests()
@@ -207,7 +213,9 @@ func TestWalkIntoWalls(t *testing.T) {
 	playerAPI.Command(webclient.Command{Verb: ".north"})
 	lines, sounds := playerAPI.PullRequests()
 	assert.Equal(t, 1, len(lines))
-	assert.Contains(t, lines, "You bump into the wall.")
+	if len(lines) >= 1 {
+		assert.Contains(t, lines, "You bump into the wall.")
+	}
 	assert.Equal(t, 1, len(sounds))
 	if len(sounds) >= 1 {
 		assert.Equal(t, "ouch.wav", sounds[0].File)

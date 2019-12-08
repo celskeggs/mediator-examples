@@ -1,3 +1,5 @@
+// +build never
+
 package world
 
 import (
@@ -13,10 +15,9 @@ import (
 //mediator:declare MobPlayerData /mob/player /mob
 type MobPlayerData struct{}
 
-func NewMobPlayerData(src *types.Datum, _ ...types.Value) MobPlayerData {
+func NewMobPlayerData(src *types.Datum, _ *MobPlayerData, _ ...types.Value) {
 	src.SetVar("name", types.String("player"))
 	src.SetVar("icon", atoms.WorldOf(src).Icon("player.dmi"))
-	return MobPlayerData{}
 }
 
 func (d *MobPlayerData) ProcBump(src *types.Datum, obstacle types.Value) types.Value {
@@ -28,48 +29,43 @@ func (d *MobPlayerData) ProcBump(src *types.Datum, obstacle types.Value) types.V
 //mediator:declare MobRatData /mob/rat /mob
 type MobRatData struct{}
 
-func NewMobRatData(src *types.Datum, _ ...types.Value) MobRatData {
+func NewMobRatData(src *types.Datum, _ *MobRatData, _ ...types.Value) {
 	src.SetVar("name", types.String("rat"))
 	src.SetVar("icon", atoms.WorldOf(src).Icon("rat.dmi"))
-	return MobRatData{}
 }
 
 //mediator:declare TurfFloorData /turf/floor /turf
 type TurfFloorData struct{}
 
-func NewTurfFloorData(src *types.Datum, _ ...types.Value) TurfFloorData {
+func NewTurfFloorData(src *types.Datum, _ *TurfFloorData, _ ...types.Value) {
 	src.SetVar("name", types.String("floor"))
 	src.SetVar("icon", atoms.WorldOf(src).Icon("floor.dmi"))
-	return TurfFloorData{}
 }
 
 //mediator:declare TurfWallData /turf/wall /turf
 type TurfWallData struct{}
 
-func NewTurfWallData(src *types.Datum, _ ...types.Value) TurfWallData {
+func NewTurfWallData(src *types.Datum, _ *TurfWallData, _ ...types.Value) {
 	src.SetVar("name", types.String("wall"))
 	src.SetVar("icon", atoms.WorldOf(src).Icon("wall.dmi"))
-	src.SetVar("density", types.Bool(true))
-	src.SetVar("opacity", types.Bool(true))
-	return TurfWallData{}
+	src.SetVar("density", types.Int(1))
+	src.SetVar("opacity", types.Int(1))
 }
 
 //mediator:declare ObjCheeseData /obj/cheese /obj
 type ObjCheeseData struct{}
 
-func NewObjCheeseData(src *types.Datum, _ ...types.Value) ObjCheeseData {
+func NewObjCheeseData(src *types.Datum, _ *ObjCheeseData, _ ...types.Value) {
 	src.SetVar("name", types.String("cheese"))
 	src.SetVar("icon", atoms.WorldOf(src).Icon("cheese.dmi"))
-	return ObjCheeseData{}
 }
 
 //mediator:declare ObjScrollData /obj/scroll /obj
 type ObjScrollData struct{}
 
-func NewObjScrollData(src *types.Datum, _ ...types.Value) ObjScrollData {
+func NewObjScrollData(src *types.Datum, _ *ObjScrollData, _ ...types.Value) {
 	src.SetVar("name", types.String("scroll"))
 	src.SetVar("icon", atoms.WorldOf(src).Icon("scroll.dmi"))
-	return ObjScrollData{}
 }
 
 //mediator:extend ExtAreaData /area
@@ -77,8 +73,7 @@ type ExtAreaData struct {
 	VarMusic sprite.Sound
 }
 
-func NewExtAreaData(src *types.Datum, _ ...types.Value) ExtAreaData {
-	return ExtAreaData{}
+func NewExtAreaData(src *types.Datum, _ *ExtAreaData, _ ...types.Value) {
 }
 
 func (d *ExtAreaData) ProcEntered(src *types.Datum, atom types.Value) types.Value {
@@ -92,21 +87,19 @@ func (d *ExtAreaData) ProcEntered(src *types.Datum, atom types.Value) types.Valu
 //mediator:declare AreaOutsideData /area/outside /area
 type AreaOutsideData struct{}
 
-func NewAreaOutsideData(src *types.Datum, _ ...types.Value) AreaOutsideData {
+func NewAreaOutsideData(src *types.Datum, _ *AreaOutsideData, _ ...types.Value) {
 	src.SetVar("name", types.String("outside"))
 	src.SetVar("desc", types.String("Nice and jazzy, here..."))
 	src.SetVar("music", procs.NewSound("jazzy.ogg"))
-	return AreaOutsideData{}
 }
 
 //mediator:declare AreaCaveData /area/cave /area
 type AreaCaveData struct{}
 
-func NewAreaCaveData(src *types.Datum, _ ...types.Value) AreaCaveData {
+func NewAreaCaveData(src *types.Datum, _ *AreaCaveData, _ ...types.Value) {
 	src.SetVar("name", types.String("cave"))
 	src.SetVar("desc", types.String("Watch out for the giant rat!"))
 	src.SetVar("music", procs.NewSound("cavern.ogg"))
-	return AreaCaveData{}
 }
 
 func BeforeMap(world *world.World) {
