@@ -4,6 +4,7 @@ package main
 import (
 	"github.com/celskeggs/mediator/platform/atoms"
 	"github.com/celskeggs/mediator/platform/format"
+	"github.com/celskeggs/mediator/platform/framework"
 	"github.com/celskeggs/mediator/platform/procs"
 	"github.com/celskeggs/mediator/platform/types"
 	"github.com/celskeggs/mediator/platform/world"
@@ -108,7 +109,19 @@ func NewAreaCaveData(src *types.Datum, _ *AreaCaveData, _ ...types.Value) {
 	src.SetVar("name", types.String("cave"))
 }
 
-func BeforeMap(world *world.World) {
+func BeforeMap(world *world.World) []string {
 	world.Name = "Your First World"
 	world.Mob = "/mob/player"
+	return []string{
+		"map.dmm",
+	}
+}
+
+func BuildWorld() *world.World {
+	world, _ := framework.BuildWorld(Tree, BeforeMap)
+	return world
+}
+
+func main() {
+	framework.Launch(Tree, BeforeMap)
 }

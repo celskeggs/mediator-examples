@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/celskeggs/mediator/platform/atoms"
 	"github.com/celskeggs/mediator/platform/datum"
-	"github.com/celskeggs/mediator/platform/framework"
 	"github.com/celskeggs/mediator/platform/types"
 	"github.com/celskeggs/mediator/platform/world"
 	"github.com/celskeggs/mediator/webclient"
@@ -11,14 +10,6 @@ import (
 	"runtime"
 	"testing"
 )
-
-func BuildWorld() *world.World {
-	return framework.BuildWorld(Tree, BeforeMap, framework.ResourceDefaults{
-		CoreResourcesDir: "../resources",
-		IconsDir:         "resources",
-		MapPath:          "map.dmm",
-	}, false)
-}
 
 func TestTurfLocation(t *testing.T) {
 	gameworld := BuildWorld()
