@@ -17,7 +17,7 @@ The easiest way to try this is to 'go get' the package.
 
     $ go get github.com/celskeggs/mediator-examples/yourfirstworld/
     $ yourfirstworld -core "$GOPATH/src/github.com/celskeggs/mediator/resources/" \
-                     -resources "$GOPATH/src/github.com/celskeggs/mediator-examples/yourfirstworld/icons/" \
+                     -resources "$GOPATH/src/github.com/celskeggs/mediator-examples/yourfirstworld/resources/" \
                      -map "$GOPATH/src/github.com/celskeggs/mediator-examples/yourfirstworld/map.dmm"
 
 To run the example, you need to point it at the three resource locations shown above, which represent:
