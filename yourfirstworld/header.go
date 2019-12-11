@@ -7,7 +7,7 @@ import (
 	_ "github.com/celskeggs/mediator/platform/world"
 )
 
-//go:generate go run github.com/celskeggs/mediator/autocoder main-a.dm main-b.dm gen_decl.go
+//go:generate go run github.com/celskeggs/mediator/autocoder "Your First World.dme" gen_decl.go
 //go:generate go run github.com/celskeggs/mediator/boilerplate
 
 func main() {

@@ -11,7 +11,6 @@ FILE: readme/readme.html
 // BEGIN_FILE_DIR
 #define FILE_DIR .
 #define FILE_DIR "icons"
-#define FILE_DIR "readme"
 #define FILE_DIR "sounds"
 // END_FILE_DIR
 
@@ -20,6 +19,7 @@ FILE: readme/readme.html
 
 // BEGIN_INCLUDE
 #include "main-a.dm"
+#include "main-b.dm"
 #include "map.dmm"
 // END_INCLUDE
 
