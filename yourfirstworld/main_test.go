@@ -1,7 +1,6 @@
 package main
 
 import (
-	yw "github.com/celskeggs/mediator-examples/yourfirstworld"
 	"github.com/celskeggs/mediator/platform/atoms"
 	"github.com/celskeggs/mediator/platform/datum"
 	"github.com/celskeggs/mediator/platform/framework"
@@ -14,7 +13,7 @@ import (
 )
 
 func BuildWorld() *world.World {
-	return framework.BuildWorld(Tree, yw.BeforeMap, framework.ResourceDefaults{
+	return framework.BuildWorld(Tree, BeforeMap, framework.ResourceDefaults{
 		CoreResourcesDir: "../resources",
 		IconsDir:         "resources",
 		MapPath:          "map.dmm",
