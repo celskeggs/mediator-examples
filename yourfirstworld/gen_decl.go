@@ -17,11 +17,17 @@ type MobPlayerData struct {
 func NewMobPlayerData(src *types.Datum, _ *MobPlayerData, _ ...types.Value) {
 	src.SetVar("icon", atoms.WorldOf(src).Icon("player.dmi"))
 	src.SetVar("name", types.String("player"))
+	src.SetVar("verbs", src.Var("verbs").Invoke("+", atoms.NewVerb("look", "/mob/player", "look")))
 }
 
 func (*MobPlayerData) ProcBump(varsrc *types.Datum, varobstacle types.Value) types.Value {
 	(varsrc).Invoke("<<", (types.String("You bump into "))+format.FormatAtom(varobstacle)+(types.String(".")))
 	(varsrc).Invoke("<<", procs.NewSound("ouch.wav"))
+	return nil
+}
+
+func (*MobPlayerData) Proclook(varsrc *types.Datum) types.Value {
+	(varsrc).Invoke("<<", types.String("You see..."))
 	return nil
 }
 

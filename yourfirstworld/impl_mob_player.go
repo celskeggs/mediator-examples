@@ -45,6 +45,8 @@ func (t *MobPlayerImpl) Var(src *types.Datum, name string) (types.Value, bool) {
 		return t.AtomData.VarDir, true
 	case "opacity":
 		return types.Int(t.AtomData.VarOpacity), true
+	case "verbs":
+		return datum.NewListFromSlice(t.AtomData.VarVerbs), true
 	case "client":
 		return t.MobData.GetClient(src), true
 	case "contents":
@@ -91,6 +93,9 @@ func (t *MobPlayerImpl) SetVar(src *types.Datum, name string, value types.Value)
 		return types.SetResultOk
 	case "opacity":
 		t.AtomData.VarOpacity = types.Unint(value)
+		return types.SetResultOk
+	case "verbs":
+		t.AtomData.VarVerbs = datum.ElementsAsType([]atoms.Verb{}, value).([]atoms.Verb)
 		return types.SetResultOk
 	case "client":
 		return types.SetResultReadOnly
@@ -147,6 +152,8 @@ func (t *MobPlayerImpl) Proc(src *types.Datum, name string, params ...types.Valu
 		return t.AtomData.ProcMove(src, types.Param(params, 0), types.Param(params, 1)), true
 	case "New":
 		return t.DatumData.ProcNew(src), true
+	case "look":
+		return t.MobPlayerData.Proclook(src), true
 	default:
 		return nil, false
 	}

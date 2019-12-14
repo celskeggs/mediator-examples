@@ -41,6 +41,8 @@ func (t *TurfImpl) Var(src *types.Datum, name string) (types.Value, bool) {
 		return t.AtomData.VarDir, true
 	case "opacity":
 		return types.Int(t.AtomData.VarOpacity), true
+	case "verbs":
+		return datum.NewListFromSlice(t.AtomData.VarVerbs), true
 	case "contents":
 		return t.AtomData.GetContents(src), true
 	case "desc":
@@ -83,6 +85,9 @@ func (t *TurfImpl) SetVar(src *types.Datum, name string, value types.Value) type
 		return types.SetResultOk
 	case "opacity":
 		t.AtomData.VarOpacity = types.Unint(value)
+		return types.SetResultOk
+	case "verbs":
+		t.AtomData.VarVerbs = datum.ElementsAsType([]atoms.Verb{}, value).([]atoms.Verb)
 		return types.SetResultOk
 	case "contents":
 		return types.SetResultReadOnly
