@@ -132,26 +132,26 @@ func (t *MobRatImpl) SetVar(src *types.Datum, name string, value types.Value) ty
 	}
 }
 
-func (t *MobRatImpl) Proc(src *types.Datum, name string, params ...types.Value) (types.Value, bool) {
+func (t *MobRatImpl) Proc(src *types.Datum, usr *types.Datum, name string, params ...types.Value) (types.Value, bool) {
 	switch name {
 	case "<<":
-		return t.MobData.OperatorWrite(src, types.Param(params, 0)), true
+		return t.MobData.OperatorWrite(src, usr, types.Param(params, 0)), true
 	case "Bump":
-		return t.AtomData.ProcBump(src, types.Param(params, 0)), true
+		return t.AtomData.ProcBump(src, usr, types.Param(params, 0)), true
 	case "Enter":
-		return t.AtomData.ProcEnter(src, types.Param(params, 0), types.Param(params, 1)), true
+		return t.AtomData.ProcEnter(src, usr, types.Param(params, 0), types.Param(params, 1)), true
 	case "Entered":
-		return t.AtomData.ProcEntered(src, types.Param(params, 0), types.Param(params, 1)), true
+		return t.AtomData.ProcEntered(src, usr, types.Param(params, 0), types.Param(params, 1)), true
 	case "Exit":
-		return t.AtomData.ProcExit(src, types.Param(params, 0), types.Param(params, 1)), true
+		return t.AtomData.ProcExit(src, usr, types.Param(params, 0), types.Param(params, 1)), true
 	case "Exited":
-		return t.AtomData.ProcExited(src, types.Param(params, 0), types.Param(params, 1)), true
+		return t.AtomData.ProcExited(src, usr, types.Param(params, 0), types.Param(params, 1)), true
 	case "Login":
-		return t.MobData.ProcLogin(src), true
+		return t.MobData.ProcLogin(src, usr), true
 	case "Move":
-		return t.AtomData.ProcMove(src, types.Param(params, 0), types.Param(params, 1)), true
+		return t.AtomData.ProcMove(src, usr, types.Param(params, 0), types.Param(params, 1)), true
 	case "New":
-		return t.DatumData.ProcNew(src), true
+		return t.DatumData.ProcNew(src, usr), true
 	default:
 		return nil, false
 	}

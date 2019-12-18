@@ -43,10 +43,10 @@ func (t *DatumImpl) SetVar(src *types.Datum, name string, value types.Value) typ
 	}
 }
 
-func (t *DatumImpl) Proc(src *types.Datum, name string, params ...types.Value) (types.Value, bool) {
+func (t *DatumImpl) Proc(src *types.Datum, usr *types.Datum, name string, params ...types.Value) (types.Value, bool) {
 	switch name {
 	case "New":
-		return t.DatumData.ProcNew(src), true
+		return t.DatumData.ProcNew(src, usr), true
 	default:
 		return nil, false
 	}

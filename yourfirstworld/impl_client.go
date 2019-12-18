@@ -70,24 +70,24 @@ func (t *ClientImpl) SetVar(src *types.Datum, name string, value types.Value) ty
 	}
 }
 
-func (t *ClientImpl) Proc(src *types.Datum, name string, params ...types.Value) (types.Value, bool) {
+func (t *ClientImpl) Proc(src *types.Datum, usr *types.Datum, name string, params ...types.Value) (types.Value, bool) {
 	switch name {
 	case "<<":
-		return t.ClientData.OperatorWrite(src, types.Param(params, 0)), true
+		return t.ClientData.OperatorWrite(src, usr, types.Param(params, 0)), true
 	case "Del":
-		return t.ClientData.ProcDel(src), true
+		return t.ClientData.ProcDel(src, usr), true
 	case "East":
-		return t.ClientData.ProcEast(src), true
+		return t.ClientData.ProcEast(src, usr), true
 	case "Move":
-		return t.ClientData.ProcMove(src, types.Param(params, 0), types.Param(params, 1)), true
+		return t.ClientData.ProcMove(src, usr, types.Param(params, 0), types.Param(params, 1)), true
 	case "New":
-		return t.ClientData.ProcNew(src, types.Param(params, 0)), true
+		return t.ClientData.ProcNew(src, usr, types.Param(params, 0)), true
 	case "North":
-		return t.ClientData.ProcNorth(src), true
+		return t.ClientData.ProcNorth(src, usr), true
 	case "South":
-		return t.ClientData.ProcSouth(src), true
+		return t.ClientData.ProcSouth(src, usr), true
 	case "West":
-		return t.ClientData.ProcWest(src), true
+		return t.ClientData.ProcWest(src, usr), true
 	default:
 		return nil, false
 	}

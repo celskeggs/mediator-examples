@@ -95,23 +95,23 @@ func TestWorldRender(t *testing.T) {
 
 func TestSingletons(t *testing.T) {
 	realm := types.NewRealm(Tree)
-	areaOne := realm.New("/area")
-	areaTwo := realm.New("/area")
+	areaOne := realm.New("/area", nil)
+	areaTwo := realm.New("/area", nil)
 	assert.True(t, areaOne == areaTwo)
 
-	turfOne := realm.New("/turf")
-	turfTwo := realm.New("/turf")
+	turfOne := realm.New("/turf", nil)
+	turfTwo := realm.New("/turf", nil)
 	assert.True(t, turfOne != turfTwo)
 }
 
 func TestSingletonsInWorld(t *testing.T) {
 	gameworld := BuildWorld()
-	areaOne := gameworld.Realm().New("/area")
-	areaTwo := gameworld.Realm().New("/area")
+	areaOne := gameworld.Realm().New("/area", nil)
+	areaTwo := gameworld.Realm().New("/area", nil)
 	assert.True(t, areaOne == areaTwo)
 
-	turfOne := gameworld.Realm().New("/turf")
-	turfTwo := gameworld.Realm().New("/turf")
+	turfOne := gameworld.Realm().New("/turf", nil)
+	turfTwo := gameworld.Realm().New("/turf", nil)
 	assert.True(t, turfOne != turfTwo)
 }
 
@@ -236,4 +236,19 @@ func TestFillUpEntireMap(t *testing.T) {
 		}
 	}
 	assert.True(t, found)
+}
+
+func TestLookVerb(t *testing.T) {
+	gameworld := BuildWorld()
+	playerAPI := gameworld.ServerAPI().AddPlayer()
+
+	player := gameworld.FindOneType("/mob/player")
+	assert.NotNil(t, player)
+	_, _ = playerAPI.PullRequests()
+
+	playerAPI.Command(webclient.Command{Verb: "look"})
+	lines, _ := playerAPI.PullRequests()
+	assert.Equal(t, 2, len(lines))
+	assert.Contains(t, lines, "You see...")
+	assert.Contains(t, lines, "the scroll.  ")
 }

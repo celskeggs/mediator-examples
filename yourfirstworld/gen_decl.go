@@ -3,6 +3,7 @@ package main
 
 import (
 	"github.com/celskeggs/mediator/platform/atoms"
+	"github.com/celskeggs/mediator/platform/datum"
 	"github.com/celskeggs/mediator/platform/format"
 	"github.com/celskeggs/mediator/platform/framework"
 	"github.com/celskeggs/mediator/platform/procs"
@@ -17,17 +18,23 @@ type MobPlayerData struct {
 func NewMobPlayerData(src *types.Datum, _ *MobPlayerData, _ ...types.Value) {
 	src.SetVar("icon", atoms.WorldOf(src).Icon("player.dmi"))
 	src.SetVar("name", types.String("player"))
-	src.SetVar("verbs", src.Var("verbs").Invoke("+", atoms.NewVerb("look", "/mob/player", "look")))
+	src.SetVar("verbs", src.Var("verbs").Invoke(nil, "+", atoms.NewVerb("look", "/mob/player", "look")))
 }
 
-func (*MobPlayerData) ProcBump(varsrc *types.Datum, varobstacle types.Value) types.Value {
-	(varsrc).Invoke("<<", (types.String("You bump into "))+format.FormatAtom(varobstacle)+(types.String(".")))
-	(varsrc).Invoke("<<", procs.NewSound("ouch.wav"))
+func (*MobPlayerData) ProcBump(varsrc *types.Datum, varusr *types.Datum, varobstacle types.Value) types.Value {
+	(varsrc).Invoke(varusr, "<<", types.String(types.Unstring(types.String("You bump into "))+format.FormatAtom(varobstacle)+types.Unstring(types.String("."))))
+	(varsrc).Invoke(varusr, "<<", procs.NewSound("ouch.wav"))
 	return nil
 }
 
-func (*MobPlayerData) Proclook(varsrc *types.Datum) types.Value {
-	(varsrc).Invoke("<<", types.String("You see..."))
+func (*MobPlayerData) Proclook(varsrc *types.Datum, varusr *types.Datum) types.Value {
+	(varsrc).Invoke(varusr, "<<", types.String("You see..."))
+	for _, varo := range datum.Elements(procs.Invoke(atoms.WorldOf(varsrc), varusr, "oview")) {
+		if !types.IsType(varo, "/atom/movable") {
+			continue
+		}
+		(varsrc).Invoke(varusr, "<<", types.String(format.FormatAtom(varo)+types.Unstring(types.String(".  "))+types.Unstring((varo).Var("desc"))))
+	}
 	return nil
 }
 
@@ -86,12 +93,12 @@ type ExtAreaData struct {
 func NewExtAreaData(src *types.Datum, _ *ExtAreaData, _ ...types.Value) {
 }
 
-func (*ExtAreaData) ProcEntered(varsrc *types.Datum, varm types.Value) types.Value {
-	if types.AsBool(procs.Invoke("!", procs.Invoke("ismob", varm))) {
+func (*ExtAreaData) ProcEntered(varsrc *types.Datum, varusr *types.Datum, varm types.Value) types.Value {
+	if types.AsBool(procs.OperatorNot(procs.Invoke(atoms.WorldOf(varsrc), varusr, "ismob", varm))) {
 		return nil
 	}
-	(varm).Invoke("<<", varsrc.Var("desc"))
-	(varm).Invoke("<<", procs.KWInvoke("sound", map[string]types.Value{"channel": types.Int(1)}, varsrc.Var("music"), types.Int(1)))
+	(varm).Invoke(varusr, "<<", varsrc.Var("desc"))
+	(varm).Invoke(varusr, "<<", procs.KWInvoke(atoms.WorldOf(varsrc), varusr, "sound", map[string]types.Value{"channel": types.Int(1)}, varsrc.Var("music"), types.Int(1)))
 	return nil
 }
 

@@ -123,22 +123,22 @@ func (t *TurfImpl) SetVar(src *types.Datum, name string, value types.Value) type
 	}
 }
 
-func (t *TurfImpl) Proc(src *types.Datum, name string, params ...types.Value) (types.Value, bool) {
+func (t *TurfImpl) Proc(src *types.Datum, usr *types.Datum, name string, params ...types.Value) (types.Value, bool) {
 	switch name {
 	case "Bump":
-		return t.AtomData.ProcBump(src, types.Param(params, 0)), true
+		return t.AtomData.ProcBump(src, usr, types.Param(params, 0)), true
 	case "Enter":
-		return t.TurfData.ProcEnter(src, types.Param(params, 0), types.Param(params, 1)), true
+		return t.TurfData.ProcEnter(src, usr, types.Param(params, 0), types.Param(params, 1)), true
 	case "Entered":
-		return t.TurfData.ProcEntered(src, types.Param(params, 0), types.Param(params, 1)), true
+		return t.TurfData.ProcEntered(src, usr, types.Param(params, 0), types.Param(params, 1)), true
 	case "Exit":
-		return t.TurfData.ProcExit(src, types.Param(params, 0), types.Param(params, 1)), true
+		return t.TurfData.ProcExit(src, usr, types.Param(params, 0), types.Param(params, 1)), true
 	case "Exited":
-		return t.TurfData.ProcExited(src, types.Param(params, 0), types.Param(params, 1)), true
+		return t.TurfData.ProcExited(src, usr, types.Param(params, 0), types.Param(params, 1)), true
 	case "Move":
-		return t.AtomData.ProcMove(src, types.Param(params, 0), types.Param(params, 1)), true
+		return t.AtomData.ProcMove(src, usr, types.Param(params, 0), types.Param(params, 1)), true
 	case "New":
-		return t.DatumData.ProcNew(src), true
+		return t.DatumData.ProcNew(src, usr), true
 	default:
 		return nil, false
 	}
