@@ -93,6 +93,29 @@ func (t *ClientImpl) Proc(src *types.Datum, usr *types.Datum, name string, param
 	}
 }
 
+func (t *ClientImpl) ProcSettings(name string) (types.ProcSettings, bool) {
+	switch name {
+	case "<<":
+		return types.ProcSettings{}, true
+	case "Del":
+		return types.ProcSettings{}, true
+	case "East":
+		return types.ProcSettings{}, true
+	case "Move":
+		return types.ProcSettings{}, true
+	case "New":
+		return types.ProcSettings{}, true
+	case "North":
+		return types.ProcSettings{}, true
+	case "South":
+		return types.ProcSettings{}, true
+	case "West":
+		return types.ProcSettings{}, true
+	default:
+		return types.ProcSettings{}, false
+	}
+}
+
 func (t *ClientImpl) Chunk(ref string) interface{} {
 	switch ref {
 	case "github.com/celskeggs/mediator/platform/world.ClientData":

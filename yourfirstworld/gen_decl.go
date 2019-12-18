@@ -69,6 +69,29 @@ func NewTurfWallData(src *types.Datum, _ *TurfWallData, _ ...types.Value) {
 	src.SetVar("name", types.String("wall"))
 }
 
+//mediator:extend ExtObjData /obj
+type ExtObjData struct {
+}
+
+func NewExtObjData(src *types.Datum, _ *ExtObjData, _ ...types.Value) {
+	src.SetVar("verbs", src.Var("verbs").Invoke(nil, "+", atoms.NewVerb("get", "/obj", "get")))
+}
+
+func (*ExtObjData) Procget(varsrc *types.Datum, varusr *types.Datum) types.Value {
+	(varusr).Invoke(varusr, "<<", types.String("You get "+format.FormatMacro("the", varsrc)+"."))
+	_ = (varsrc).Invoke(varusr, "Move", varusr)
+	return nil
+}
+
+func (*ExtObjData) SettingsForProcget() types.ProcSettings {
+	return types.ProcSettings{
+		Src: types.SrcSetting{
+			Type: types.SrcSettingTypeOView,
+			In:   true,
+		},
+	}
+}
+
 //mediator:declare ObjCheeseData /obj/cheese /obj
 type ObjCheeseData struct {
 }
@@ -104,6 +127,14 @@ func (*ExtAreaData) ProcEntered(varsrc *types.Datum, varusr *types.Datum, varm t
 	(varm).Invoke(varusr, "<<", varsrc.Var("desc"))
 	(varm).Invoke(varusr, "<<", procs.KWInvoke(atoms.WorldOf(varsrc), varusr, "sound", map[string]types.Value{"channel": types.Int(1)}, varsrc.Var("music"), types.Int(1)))
 	return nil
+}
+
+func (*ExtAreaData) SettingsForProcEntered() types.ProcSettings {
+	return types.ProcSettings{
+		Src: types.SrcSetting{
+			Type: types.SrcSettingTypeView,
+		},
+	}
 }
 
 //mediator:declare AreaOutsideData /area/outside /area

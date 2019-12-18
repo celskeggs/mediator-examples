@@ -150,6 +150,27 @@ func (t *AreaCaveImpl) Proc(src *types.Datum, usr *types.Datum, name string, par
 	}
 }
 
+func (t *AreaCaveImpl) ProcSettings(name string) (types.ProcSettings, bool) {
+	switch name {
+	case "Bump":
+		return types.ProcSettings{}, true
+	case "Enter":
+		return types.ProcSettings{}, true
+	case "Entered":
+		return t.ExtAreaData.SettingsForProcEntered(), true
+	case "Exit":
+		return types.ProcSettings{}, true
+	case "Exited":
+		return types.ProcSettings{}, true
+	case "Move":
+		return types.ProcSettings{}, true
+	case "New":
+		return types.ProcSettings{}, true
+	default:
+		return types.ProcSettings{}, false
+	}
+}
+
 func (t *AreaCaveImpl) Chunk(ref string) interface{} {
 	switch ref {
 	case "github.com/celskeggs/mediator-examples/yourfirstworld.AreaCaveData":

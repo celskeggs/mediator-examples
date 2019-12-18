@@ -52,6 +52,15 @@ func (t *DatumImpl) Proc(src *types.Datum, usr *types.Datum, name string, params
 	}
 }
 
+func (t *DatumImpl) ProcSettings(name string) (types.ProcSettings, bool) {
+	switch name {
+	case "New":
+		return types.ProcSettings{}, true
+	default:
+		return types.ProcSettings{}, false
+	}
+}
+
 func (t *DatumImpl) Chunk(ref string) interface{} {
 	switch ref {
 	case "github.com/celskeggs/mediator/platform/datum.DatumData":

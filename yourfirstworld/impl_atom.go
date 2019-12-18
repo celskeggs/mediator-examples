@@ -139,6 +139,27 @@ func (t *AtomImpl) Proc(src *types.Datum, usr *types.Datum, name string, params 
 	}
 }
 
+func (t *AtomImpl) ProcSettings(name string) (types.ProcSettings, bool) {
+	switch name {
+	case "Bump":
+		return types.ProcSettings{}, true
+	case "Enter":
+		return types.ProcSettings{}, true
+	case "Entered":
+		return types.ProcSettings{}, true
+	case "Exit":
+		return types.ProcSettings{}, true
+	case "Exited":
+		return types.ProcSettings{}, true
+	case "Move":
+		return types.ProcSettings{}, true
+	case "New":
+		return types.ProcSettings{}, true
+	default:
+		return types.ProcSettings{}, false
+	}
+}
+
 func (t *AtomImpl) Chunk(ref string) interface{} {
 	switch ref {
 	case "github.com/celskeggs/mediator/platform/atoms.AtomData":

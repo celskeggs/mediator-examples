@@ -11,6 +11,7 @@ import (
 type ObjScrollImpl struct {
 	ObjScrollData
 	atoms.ObjData
+	ExtObjData
 	atoms.AtomMovableData
 	atoms.AtomData
 	datum.DatumData
@@ -22,6 +23,7 @@ func NewObjScroll(realm *types.Realm, params ...types.Value) *types.Datum {
 	datum.NewDatumData(d, &i.DatumData, params...)
 	atoms.NewAtomData(d, &i.AtomData, params...)
 	atoms.NewAtomMovableData(d, &i.AtomMovableData, params...)
+	NewExtObjData(d, &i.ExtObjData, params...)
 	atoms.NewObjData(d, &i.ObjData, params...)
 	NewObjScrollData(d, &i.ObjScrollData, params...)
 	return d
@@ -140,8 +142,33 @@ func (t *ObjScrollImpl) Proc(src *types.Datum, usr *types.Datum, name string, pa
 		return t.AtomData.ProcMove(src, usr, types.Param(params, 0), types.Param(params, 1)), true
 	case "New":
 		return t.DatumData.ProcNew(src, usr), true
+	case "get":
+		return t.ExtObjData.Procget(src, usr), true
 	default:
 		return nil, false
+	}
+}
+
+func (t *ObjScrollImpl) ProcSettings(name string) (types.ProcSettings, bool) {
+	switch name {
+	case "Bump":
+		return types.ProcSettings{}, true
+	case "Enter":
+		return types.ProcSettings{}, true
+	case "Entered":
+		return types.ProcSettings{}, true
+	case "Exit":
+		return types.ProcSettings{}, true
+	case "Exited":
+		return types.ProcSettings{}, true
+	case "Move":
+		return types.ProcSettings{}, true
+	case "New":
+		return types.ProcSettings{}, true
+	case "get":
+		return t.ExtObjData.SettingsForProcget(), true
+	default:
+		return types.ProcSettings{}, false
 	}
 }
 
@@ -151,6 +178,8 @@ func (t *ObjScrollImpl) Chunk(ref string) interface{} {
 		return &t.ObjScrollData
 	case "github.com/celskeggs/mediator/platform/atoms.ObjData":
 		return &t.ObjData
+	case "github.com/celskeggs/mediator-examples/yourfirstworld.ExtObjData":
+		return &t.ExtObjData
 	case "github.com/celskeggs/mediator/platform/atoms.AtomMovableData":
 		return &t.AtomMovableData
 	case "github.com/celskeggs/mediator/platform/atoms.AtomData":
