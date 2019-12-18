@@ -17,12 +17,13 @@ type MobPlayerData struct {
 
 func NewMobPlayerData(src *types.Datum, _ *MobPlayerData, _ ...types.Value) {
 	src.SetVar("icon", atoms.WorldOf(src).Icon("player.dmi"))
+	src.SetVar("desc", types.String("A handsome and dashing rogue."))
 	src.SetVar("name", types.String("player"))
 	src.SetVar("verbs", src.Var("verbs").Invoke(nil, "+", atoms.NewVerb("look", "/mob/player", "look")))
 }
 
 func (*MobPlayerData) ProcBump(varsrc *types.Datum, varusr *types.Datum, varobstacle types.Value) types.Value {
-	(varsrc).Invoke(varusr, "<<", types.String(types.Unstring(types.String("You bump into "))+format.FormatAtom(varobstacle)+types.Unstring(types.String("."))))
+	(varsrc).Invoke(varusr, "<<", types.String("You bump into "+format.FormatMacro("the", varobstacle)+"."))
 	(varsrc).Invoke(varusr, "<<", procs.NewSound("ouch.wav"))
 	return nil
 }
@@ -33,7 +34,7 @@ func (*MobPlayerData) Proclook(varsrc *types.Datum, varusr *types.Datum) types.V
 		if !types.IsType(varo, "/atom/movable") {
 			continue
 		}
-		(varsrc).Invoke(varusr, "<<", types.String(format.FormatAtom(varo)+types.Unstring(types.String(".  "))+types.Unstring((varo).Var("desc"))))
+		(varsrc).Invoke(varusr, "<<", types.String(format.FormatMacro("The", varo)+".  "+format.FormatMacro("The", (varo).Var("desc"))))
 	}
 	return nil
 }
@@ -44,6 +45,7 @@ type MobRatData struct {
 
 func NewMobRatData(src *types.Datum, _ *MobRatData, _ ...types.Value) {
 	src.SetVar("icon", atoms.WorldOf(src).Icon("rat.dmi"))
+	src.SetVar("desc", types.String("It's quite large."))
 	src.SetVar("name", types.String("rat"))
 }
 
@@ -73,6 +75,7 @@ type ObjCheeseData struct {
 
 func NewObjCheeseData(src *types.Datum, _ *ObjCheeseData, _ ...types.Value) {
 	src.SetVar("icon", atoms.WorldOf(src).Icon("cheese.dmi"))
+	src.SetVar("desc", types.String("It is quite smelly."))
 	src.SetVar("name", types.String("cheese"))
 }
 
@@ -82,6 +85,7 @@ type ObjScrollData struct {
 
 func NewObjScrollData(src *types.Datum, _ *ObjScrollData, _ ...types.Value) {
 	src.SetVar("icon", atoms.WorldOf(src).Icon("scroll.dmi"))
+	src.SetVar("desc", types.String("It looks to be rather old."))
 	src.SetVar("name", types.String("scroll"))
 }
 

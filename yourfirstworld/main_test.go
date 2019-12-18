@@ -250,5 +250,5 @@ func TestLookVerb(t *testing.T) {
 	lines, _ := playerAPI.PullRequests()
 	assert.Equal(t, 2, len(lines))
 	assert.Contains(t, lines, "You see...")
-	assert.Contains(t, lines, "the scroll.  ")
+	assert.Contains(t, lines, "The scroll.  It looks to be rather old.")
 }
