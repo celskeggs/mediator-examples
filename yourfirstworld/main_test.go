@@ -330,11 +330,105 @@ func TestGetDropVerbs(t *testing.T) {
 }
 
 func TestEatVerb(t *testing.T) {
-	util.FIXME("TODO: test eating verb")
-	t.Fail()
+	gameworld := BuildWorld()
+	playerAPI := gameworld.ServerAPI().AddPlayer()
+
+	player := gameworld.FindOneType("/mob/player")
+	assert.NotNil(t, player)
+	cheese := gameworld.FindOneType("/obj/cheese")
+	assert.NotNil(t, cheese)
+	ok := types.Unint(player.Invoke(nil, "Move", cheese.Var("loc")))
+	assert.Equal(t, 1, ok)
+	_, _ = playerAPI.PullRequests()
+
+	playerAPI.Command(webclient.Command{Verb: "eat cheese"})
+	lines, _ := playerAPI.PullRequests()
+	assert.Equal(t, 1, len(lines))
+	assert.Contains(t, lines, "Not a known verb: \"eat\"")
+
+	playerAPI.Command(webclient.Command{Verb: "get cheese"})
+	lines, _ = playerAPI.PullRequests()
+	assert.Equal(t, 1, len(lines))
+	assert.Contains(t, lines, "You get the cheese.")
+
+	assert.Equal(t, "", types.Unstring(cheese.Var("suffix")))
+
+	playerAPI.Command(webclient.Command{Verb: "eat cheese"})
+	lines, _ = playerAPI.PullRequests()
+	assert.Equal(t, 1, len(lines))
+	assert.Contains(t, lines, "You take a bite of the cheese. Bleck!")
+
+	assert.Equal(t, "(nibbled)", types.Unstring(cheese.Var("suffix")))
+
+	playerAPI.Command(webclient.Command{Verb: "drop cheese"})
+	lines, _ = playerAPI.PullRequests()
+	assert.Equal(t, 1, len(lines))
+	assert.Contains(t, lines, "You drop the cheese.")
+
+	assert.Equal(t, "(nibbled)", types.Unstring(cheese.Var("suffix")))
+
+	util.FIXME("test that suffix shows up in stat panel")
 }
 
 func TestReadVerb(t *testing.T) {
-	util.FIXME("TODO: test reading verb")
-	t.Fail()
+	gameworld := BuildWorld()
+	playerAPI := gameworld.ServerAPI().AddPlayer()
+
+	player := gameworld.FindOneType("/mob/player")
+	assert.NotNil(t, player)
+	scroll := gameworld.FindOneType("/obj/scroll")
+	assert.NotNil(t, scroll)
+	ok := types.Unint(player.Invoke(nil, "Move", scroll.Var("loc")))
+	assert.Equal(t, 1, ok)
+	_, _ = playerAPI.PullRequests()
+
+	rats := gameworld.FindAllType("/mob/rat")
+	assert.Equal(t, 1, len(rats))
+
+	playerAPI.Command(webclient.Command{Verb: "get scroll"})
+	lines, _ := playerAPI.PullRequests()
+	assert.Equal(t, 1, len(lines))
+	assert.Contains(t, lines, "You get the scroll.")
+
+	assert.Equal(t, player, scroll.Var("loc"))
+	countScrollsInPlayer := 0
+	for _, element := range datum.Elements(player.Var("contents")) {
+		if types.IsType(element, "/obj/scroll") {
+			countScrollsInPlayer++
+		}
+	}
+	assert.Equal(t, 1, countScrollsInPlayer)
+	assert.Equal(t, 1, len(gameworld.FindAllType("/obj/scroll")))
+
+	playerAPI.Command(webclient.Command{Verb: "read scroll"})
+	lines, _ = playerAPI.PullRequests()
+	assert.Equal(t, 2, len(lines))
+	assert.Contains(t, lines, "You utter the phrase written on the scroll: \"Knuth\"!")
+	assert.Contains(t, lines, "A giant rat appears!")
+
+	nrats := gameworld.FindAllType("/mob/rat")
+	assert.Equal(t, 2, len(nrats))
+	if len(rats) >= 1 {
+		var newrat types.Value
+		for _, rat := range nrats {
+			if rat != rats[0] {
+				newrat = rat
+			}
+		}
+		assert.NotNil(t, newrat)
+		if newrat != nil {
+			assert.Equal(t, player.Var("loc"), newrat.Var("loc"))
+		}
+	}
+
+	countScrollsInPlayer = 0
+	for _, element := range datum.Elements(player.Var("contents")) {
+		if types.IsType(element, "/obj/scroll") {
+			countScrollsInPlayer++
+		}
+	}
+	assert.Equal(t, 0, countScrollsInPlayer)
+	assert.Equal(t, 0, len(gameworld.FindAllType("/obj/scroll")))
+
+	util.FIXME("confirm that scroll is no longer in stat panel")
 }
