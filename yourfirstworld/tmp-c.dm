@@ -14,6 +14,11 @@ obj
 			// Move the obj into the player's contents.
 			Move(usr)
 
+		drop()
+			usr << "You drop [src]."
+
+			Move(usr.loc)
+
 	cheese
 		desc = "It is quite smelly."
 

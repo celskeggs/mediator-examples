@@ -142,6 +142,8 @@ func (t *ObjCheeseImpl) Proc(src *types.Datum, usr *types.Datum, name string, pa
 		return t.AtomData.ProcMove(src, usr, types.Param(params, 0), types.Param(params, 1)), true
 	case "New":
 		return t.DatumData.ProcNew(src, usr), true
+	case "drop":
+		return t.ExtObjData.Procdrop(src, usr), true
 	case "get":
 		return t.ExtObjData.Procget(src, usr), true
 	default:
@@ -165,6 +167,8 @@ func (t *ObjCheeseImpl) ProcSettings(name string) (types.ProcSettings, bool) {
 		return types.ProcSettings{}, true
 	case "New":
 		return types.ProcSettings{}, true
+	case "drop":
+		return t.ExtObjData.SettingsForProcdrop(), true
 	case "get":
 		return t.ExtObjData.SettingsForProcget(), true
 	default:

@@ -7,6 +7,7 @@ import (
 	"github.com/celskeggs/mediator/platform/world"
 	"github.com/celskeggs/mediator/util"
 	"github.com/celskeggs/mediator/webclient"
+	"github.com/celskeggs/mediator/websession"
 	"github.com/stretchr/testify/assert"
 	"runtime"
 	"testing"
@@ -254,7 +255,16 @@ func TestLookVerb(t *testing.T) {
 	assert.Contains(t, lines, "The scroll.  It looks to be rather old.")
 }
 
-func TestGetVerb(t *testing.T) {
+func iconCounts(playerAPI websession.PlayerAPI) map[string]int {
+	view := playerAPI.Render()
+	iconCount := map[string]int{}
+	for _, sprite := range view.Sprites {
+		iconCount[sprite.Icon] += 1
+	}
+	return iconCount
+}
+
+func TestGetDropVerbs(t *testing.T) {
 	gameworld := BuildWorld()
 	playerAPI := gameworld.ServerAPI().AddPlayer()
 
@@ -275,11 +285,7 @@ func TestGetVerb(t *testing.T) {
 	assert.Equal(t, 1, len(lines))
 	assert.Contains(t, lines, "You get the scroll.")
 
-	view := playerAPI.Render()
-	iconCount := map[string]int{}
-	for _, sprite := range view.Sprites {
-		iconCount[sprite.Icon] += 1
-	}
+	iconCount := iconCounts(playerAPI)
 	// should only be wall, floor, and player, not scroll
 	assert.Equal(t, 3, len(iconCount))
 	assert.Equal(t, 0, iconCount["scroll.dmi"])
@@ -288,6 +294,16 @@ func TestGetVerb(t *testing.T) {
 	assert.Equal(t, 1, iconCount["player.dmi"])
 
 	assert.Equal(t, player, scroll.Var("loc"))
+
+	playerAPI.Command(webclient.Command{Verb: "drop"})
+	lines, _ = playerAPI.PullRequests()
+	assert.Equal(t, 1, len(lines))
+	assert.Contains(t, lines, "You drop the scroll.")
+
+	assert.Equal(t, player.Var("loc"), scroll.Var("loc"))
+
+	iconCount = iconCounts(playerAPI)
+	assert.Equal(t, 1, iconCount["scroll.dmi"])
 
 	util.FIXME("try dropping")
 	util.FIXME("try picking up with 'get scroll' instead of just 'get'")

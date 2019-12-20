@@ -75,6 +75,7 @@ type ExtObjData struct {
 
 func NewExtObjData(src *types.Datum, _ *ExtObjData, _ ...types.Value) {
 	src.SetVar("verbs", src.Var("verbs").Invoke(nil, "+", atoms.NewVerb("get", "/obj", "get")))
+	src.SetVar("verbs", src.Var("verbs").Invoke(nil, "+", atoms.NewVerb("drop", "/obj", "drop")))
 }
 
 func (*ExtObjData) Procget(varsrc *types.Datum, varusr *types.Datum) types.Value {
@@ -87,6 +88,20 @@ func (*ExtObjData) SettingsForProcget() types.ProcSettings {
 	return types.ProcSettings{
 		Src: types.SrcSetting{
 			Type: types.SrcSettingTypeOView,
+			In:   true,
+		},
+	}
+}
+func (*ExtObjData) Procdrop(varsrc *types.Datum, varusr *types.Datum) types.Value {
+	(varusr).Invoke(varusr, "<<", types.String("You drop "+format.FormatMacro("the", varsrc)+"."))
+	_ = (varsrc).Invoke(varusr, "Move", (varusr).Var("loc"))
+	return nil
+}
+
+func (*ExtObjData) SettingsForProcdrop() types.ProcSettings {
+	return types.ProcSettings{
+		Src: types.SrcSetting{
+			Type: types.SrcSettingTypeUsr,
 			In:   true,
 		},
 	}
