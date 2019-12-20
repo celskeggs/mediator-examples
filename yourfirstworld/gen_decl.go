@@ -28,6 +28,11 @@ func (*MobPlayerData) ProcBump(varsrc *types.Datum, varusr *types.Datum, varobst
 	return nil
 }
 
+func (*MobPlayerData) ProcStat(varsrc *types.Datum, varusr *types.Datum) types.Value {
+	_ = procs.Invoke(atoms.WorldOf(varsrc), varusr, "statpanel", types.String("Inventory"), varsrc.Var("contents"))
+	return nil
+}
+
 func (*MobPlayerData) Proclook(varsrc *types.Datum, varusr *types.Datum) types.Value {
 	(varsrc).Invoke(varusr, "<<", types.String("You see..."))
 	for _, varo := range datum.Elements(procs.Invoke(atoms.WorldOf(varsrc), varusr, "oview")) {

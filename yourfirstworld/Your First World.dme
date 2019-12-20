@@ -20,8 +20,7 @@ FILE: readme/readme.html
 // BEGIN_INCLUDE
 #include "main-a.dm"
 #include "main-b.dm"
-#include "tmp-c.dm"
-//#include "main-c.dm"
+#include "main-c.dm"
 #include "map.dmm"
 // END_INCLUDE
 

@@ -146,6 +146,8 @@ func (t *TurfFloorImpl) Proc(src *types.Datum, usr *types.Datum, name string, pa
 		return t.AtomData.ProcMove(src, usr, types.Param(params, 0), types.Param(params, 1)), true
 	case "New":
 		return t.DatumData.ProcNew(src, usr), true
+	case "Stat":
+		return t.AtomData.ProcStat(src, usr), true
 	default:
 		return nil, false
 	}
@@ -166,6 +168,8 @@ func (t *TurfFloorImpl) ProcSettings(name string) (types.ProcSettings, bool) {
 	case "Move":
 		return types.ProcSettings{}, true
 	case "New":
+		return types.ProcSettings{}, true
+	case "Stat":
 		return types.ProcSettings{}, true
 	default:
 		return types.ProcSettings{}, false
