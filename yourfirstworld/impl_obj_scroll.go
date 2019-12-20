@@ -63,6 +63,8 @@ func (t *ObjScrollImpl) Var(src *types.Datum, name string) (types.Value, bool) {
 		return t.AtomData.GetLoc(src), true
 	case "name":
 		return t.AtomData.GetName(src), true
+	case "suffix":
+		return t.AtomData.GetSuffix(src), true
 	case "x":
 		return t.AtomData.GetX(src), true
 	case "y":
@@ -115,6 +117,9 @@ func (t *ObjScrollImpl) SetVar(src *types.Datum, name string, value types.Value)
 	case "name":
 		t.AtomData.SetName(src, value)
 		return types.SetResultOk
+	case "suffix":
+		t.AtomData.SetSuffix(src, value)
+		return types.SetResultOk
 	case "x":
 		return types.SetResultReadOnly
 	case "y":
@@ -146,6 +151,8 @@ func (t *ObjScrollImpl) Proc(src *types.Datum, usr *types.Datum, name string, pa
 		return t.ExtObjData.Procdrop(src, usr), true
 	case "get":
 		return t.ExtObjData.Procget(src, usr), true
+	case "read":
+		return t.ObjScrollData.Procread(src, usr), true
 	default:
 		return nil, false
 	}
@@ -171,6 +178,8 @@ func (t *ObjScrollImpl) ProcSettings(name string) (types.ProcSettings, bool) {
 		return t.ExtObjData.SettingsForProcdrop(), true
 	case "get":
 		return t.ExtObjData.SettingsForProcget(), true
+	case "read":
+		return t.ObjScrollData.SettingsForProcread(), true
 	default:
 		return types.ProcSettings{}, false
 	}

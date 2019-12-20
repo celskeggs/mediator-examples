@@ -65,6 +65,8 @@ func (t *MobPlayerImpl) Var(src *types.Datum, name string) (types.Value, bool) {
 		return t.AtomData.GetLoc(src), true
 	case "name":
 		return t.AtomData.GetName(src), true
+	case "suffix":
+		return t.AtomData.GetSuffix(src), true
 	case "x":
 		return t.AtomData.GetX(src), true
 	case "y":
@@ -120,6 +122,9 @@ func (t *MobPlayerImpl) SetVar(src *types.Datum, name string, value types.Value)
 		return types.SetResultOk
 	case "name":
 		t.AtomData.SetName(src, value)
+		return types.SetResultOk
+	case "suffix":
+		t.AtomData.SetSuffix(src, value)
 		return types.SetResultOk
 	case "x":
 		return types.SetResultReadOnly

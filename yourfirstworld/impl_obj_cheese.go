@@ -63,6 +63,8 @@ func (t *ObjCheeseImpl) Var(src *types.Datum, name string) (types.Value, bool) {
 		return t.AtomData.GetLoc(src), true
 	case "name":
 		return t.AtomData.GetName(src), true
+	case "suffix":
+		return t.AtomData.GetSuffix(src), true
 	case "x":
 		return t.AtomData.GetX(src), true
 	case "y":
@@ -115,6 +117,9 @@ func (t *ObjCheeseImpl) SetVar(src *types.Datum, name string, value types.Value)
 	case "name":
 		t.AtomData.SetName(src, value)
 		return types.SetResultOk
+	case "suffix":
+		t.AtomData.SetSuffix(src, value)
+		return types.SetResultOk
 	case "x":
 		return types.SetResultReadOnly
 	case "y":
@@ -144,6 +149,8 @@ func (t *ObjCheeseImpl) Proc(src *types.Datum, usr *types.Datum, name string, pa
 		return t.DatumData.ProcNew(src, usr), true
 	case "drop":
 		return t.ExtObjData.Procdrop(src, usr), true
+	case "eat":
+		return t.ObjCheeseData.Proceat(src, usr), true
 	case "get":
 		return t.ExtObjData.Procget(src, usr), true
 	default:
@@ -169,6 +176,8 @@ func (t *ObjCheeseImpl) ProcSettings(name string) (types.ProcSettings, bool) {
 		return types.ProcSettings{}, true
 	case "drop":
 		return t.ExtObjData.SettingsForProcdrop(), true
+	case "eat":
+		return t.ObjCheeseData.SettingsForProceat(), true
 	case "get":
 		return t.ExtObjData.SettingsForProcget(), true
 	default:

@@ -115,6 +115,22 @@ func NewObjCheeseData(src *types.Datum, _ *ObjCheeseData, _ ...types.Value) {
 	src.SetVar("icon", atoms.WorldOf(src).Icon("cheese.dmi"))
 	src.SetVar("desc", types.String("It is quite smelly."))
 	src.SetVar("name", types.String("cheese"))
+	src.SetVar("verbs", src.Var("verbs").Invoke(nil, "+", atoms.NewVerb("eat", "/obj/cheese", "eat")))
+}
+
+func (*ObjCheeseData) Proceat(varsrc *types.Datum, varusr *types.Datum) types.Value {
+	(varusr).Invoke(varusr, "<<", types.String("You take a bite of the cheese. Bleck!"))
+	varsrc.SetVar("suffix", types.String("(nibbled)"))
+	return nil
+}
+
+func (*ObjCheeseData) SettingsForProceat() types.ProcSettings {
+	return types.ProcSettings{
+		Src: types.SrcSetting{
+			Type: types.SrcSettingTypeUsr,
+			In:   true,
+		},
+	}
 }
 
 //mediator:declare ObjScrollData /obj/scroll /obj
@@ -125,6 +141,24 @@ func NewObjScrollData(src *types.Datum, _ *ObjScrollData, _ ...types.Value) {
 	src.SetVar("icon", atoms.WorldOf(src).Icon("scroll.dmi"))
 	src.SetVar("desc", types.String("It looks to be rather old."))
 	src.SetVar("name", types.String("scroll"))
+	src.SetVar("verbs", src.Var("verbs").Invoke(nil, "+", atoms.NewVerb("read", "/obj/scroll", "read")))
+}
+
+func (*ObjScrollData) Procread(varsrc *types.Datum, varusr *types.Datum) types.Value {
+	(varusr).Invoke(varusr, "<<", types.String("You utter the phrase written on the scroll: \"Knuth\"!"))
+	_ = atoms.WorldOf(varsrc).Realm().New("/mob/rat", varusr, (varusr).Var("loc"))
+	(varusr).Invoke(varusr, "<<", types.String("A giant rat appears!"))
+	types.Del(varsrc)
+	return nil
+}
+
+func (*ObjScrollData) SettingsForProcread() types.ProcSettings {
+	return types.ProcSettings{
+		Src: types.SrcSetting{
+			Type: types.SrcSettingTypeUsr,
+			In:   true,
+		},
+	}
 }
 
 //mediator:extend ExtAreaData /area

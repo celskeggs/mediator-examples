@@ -5,6 +5,7 @@ import (
 	"github.com/celskeggs/mediator/platform/datum"
 	"github.com/celskeggs/mediator/platform/types"
 	"github.com/celskeggs/mediator/platform/world"
+	"github.com/celskeggs/mediator/util"
 	"github.com/celskeggs/mediator/webclient"
 	"github.com/celskeggs/mediator/websession"
 	"github.com/stretchr/testify/assert"
@@ -326,4 +327,14 @@ func TestGetDropVerbs(t *testing.T) {
 
 	iconCount = iconCounts(playerAPI)
 	assert.Equal(t, 1, iconCount["scroll.dmi"])
+}
+
+func TestEatVerb(t *testing.T) {
+	util.FIXME("TODO: test eating verb")
+	t.Fail()
+}
+
+func TestReadVerb(t *testing.T) {
+	util.FIXME("TODO: test reading verb")
+	t.Fail()
 }

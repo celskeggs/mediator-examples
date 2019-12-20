@@ -22,16 +22,37 @@ obj
 	cheese
 		desc = "It is quite smelly."
 
+		verb
+			eat()
+				usr << "You take a bite of the cheese. Bleck!"
+
+				suffix = "(nibbled)"
+
 	scroll
 		desc = "It looks to be rather old."
 
-/mob/player/desc = "A handsome and dashing rogue."
+		verb
+			read()
+				usr << "You utter the phrase written on the scroll: \"Knuth\"!"
 
-/mob/player/verb/look()
-    src << "You see..."
+				// Create a new rat at the player's location.
+				new /mob/rat(usr.loc)
 
-    for(var/atom/movable/o in oview())
-        src << "[o].  [o.desc]"
+				usr << "A giant rat appears!"
 
-/mob/rat
-	desc = "It's quite large."
+				// Delete the scroll after use.
+				del src
+
+mob
+	player
+		desc = "A handsome and dashing rogue."
+
+		verb
+			look()
+				src << "You see..."
+
+				for(var/atom/movable/o in oview())
+					src << "[o].  [o.desc]"
+
+	rat
+		desc = "It's quite large."
