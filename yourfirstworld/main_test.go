@@ -5,7 +5,6 @@ import (
 	"github.com/celskeggs/mediator/platform/datum"
 	"github.com/celskeggs/mediator/platform/types"
 	"github.com/celskeggs/mediator/platform/world"
-	"github.com/celskeggs/mediator/util"
 	"github.com/celskeggs/mediator/webclient"
 	"github.com/celskeggs/mediator/websession"
 	"github.com/stretchr/testify/assert"
@@ -280,6 +279,7 @@ func TestGetDropVerbs(t *testing.T) {
 	for y := types.Unuint(player.Var("y")); y < types.Unuint(scroll.Var("y")); y++ {
 		playerAPI.Command(webclient.Command{Verb: ".north"})
 	}
+
 	playerAPI.Command(webclient.Command{Verb: "get"})
 	lines, _ := playerAPI.PullRequests()
 	assert.Equal(t, 1, len(lines))
@@ -302,9 +302,28 @@ func TestGetDropVerbs(t *testing.T) {
 
 	assert.Equal(t, player.Var("loc"), scroll.Var("loc"))
 
+	playerAPI.Command(webclient.Command{Verb: "get scroll"})
+	lines, _ = playerAPI.PullRequests()
+	assert.Equal(t, 1, len(lines))
+	assert.Contains(t, lines, "You get the scroll.")
+
+	assert.Equal(t, player, scroll.Var("loc"))
+
+	playerAPI.Command(webclient.Command{Verb: "drop cheese"})
+	lines, _ = playerAPI.PullRequests()
+	assert.Equal(t, 1, len(lines))
+	assert.Contains(t, lines, "Not a known verb: \"drop\"")
+
+	// location should stay the same
+	assert.Equal(t, player, scroll.Var("loc"))
+
+	playerAPI.Command(webclient.Command{Verb: "drop scroll"})
+	lines, _ = playerAPI.PullRequests()
+	assert.Equal(t, 1, len(lines))
+	assert.Contains(t, lines, "You drop the scroll.")
+
+	assert.Equal(t, player.Var("loc"), scroll.Var("loc"))
+
 	iconCount = iconCounts(playerAPI)
 	assert.Equal(t, 1, iconCount["scroll.dmi"])
-
-	util.FIXME("try dropping")
-	util.FIXME("try picking up with 'get scroll' instead of just 'get'")
 }
