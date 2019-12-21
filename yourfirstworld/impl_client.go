@@ -32,6 +32,8 @@ func (t *ClientImpl) Var(src *types.Datum, name string) (types.Value, bool) {
 		return types.TypePath("/datum"), true
 	case "key":
 		return types.String(t.ClientData.VarKey), true
+	case "statobj":
+		return t.ClientData.VarStatobj.Dereference(), true
 	case "view":
 		return types.Int(t.ClientData.VarView), true
 	case "eye":
@@ -53,6 +55,9 @@ func (t *ClientImpl) SetVar(src *types.Datum, name string, value types.Value) ty
 		return types.SetResultReadOnly
 	case "key":
 		t.ClientData.VarKey = types.Unstring(value)
+		return types.SetResultOk
+	case "statobj":
+		t.ClientData.VarStatobj = types.Reference(value)
 		return types.SetResultOk
 	case "view":
 		t.ClientData.VarView = types.Unint(value)
@@ -86,6 +91,8 @@ func (t *ClientImpl) Proc(src *types.Datum, usr *types.Datum, name string, param
 		return t.ClientData.ProcNorth(src, usr), true
 	case "South":
 		return t.ClientData.ProcSouth(src, usr), true
+	case "Stat":
+		return t.ClientData.ProcStat(src, usr), true
 	case "West":
 		return t.ClientData.ProcWest(src, usr), true
 	default:
@@ -108,6 +115,8 @@ func (t *ClientImpl) ProcSettings(name string) (types.ProcSettings, bool) {
 	case "North":
 		return types.ProcSettings{}, true
 	case "South":
+		return types.ProcSettings{}, true
+	case "Stat":
 		return types.ProcSettings{}, true
 	case "West":
 		return types.ProcSettings{}, true

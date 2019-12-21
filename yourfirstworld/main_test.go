@@ -7,6 +7,7 @@ import (
 	"github.com/celskeggs/mediator/platform/world"
 	"github.com/celskeggs/mediator/util"
 	"github.com/celskeggs/mediator/webclient"
+	"github.com/celskeggs/mediator/webclient/sprite"
 	"github.com/celskeggs/mediator/websession"
 	"github.com/stretchr/testify/assert"
 	"runtime"
@@ -431,4 +432,55 @@ func TestReadVerb(t *testing.T) {
 	assert.Equal(t, 0, len(gameworld.FindAllType("/obj/scroll")))
 
 	util.FIXME("confirm that scroll is no longer in stat panel")
+}
+
+func TestStatPanel(t *testing.T) {
+	gameworld := BuildWorld()
+	serverAPI := gameworld.ServerAPI()
+	playerAPI := serverAPI.AddPlayer()
+
+	player := gameworld.FindOneType("/mob/player")
+	assert.NotNil(t, player)
+
+	assert.Equal(t, player, player.Var("client").Var("statobj"))
+
+	view := playerAPI.Render()
+	assert.Equal(t, sprite.StatDisplay{}, view.Stats)
+
+	serverAPI.Tick()
+
+	view = playerAPI.Render()
+	assert.NotEqual(t, sprite.StatDisplay{}, view.Stats)
+}
+
+func TestDisappearingRat(t *testing.T) {
+	gameworld := BuildWorld()
+	serverAPI := gameworld.ServerAPI()
+	playerAPI := serverAPI.AddPlayer()
+
+	player := gameworld.FindOneType("/mob/player")
+	assert.NotNil(t, player)
+	cheese := gameworld.FindOneType("/obj/cheese")
+	assert.NotNil(t, cheese)
+	ok := types.Unint(player.Invoke(nil, "Move", cheese.Var("loc")))
+	assert.Equal(t, 1, ok)
+	_, _ = playerAPI.PullRequests()
+
+	playerAPI.Command(webclient.Command{Verb: ".south"})
+	playerAPI.Command(webclient.Command{Verb: "look"})
+	lines, _ := playerAPI.PullRequests()
+	assert.Equal(t, 2, len(lines))
+	// Weirdly enough, the player *can* see the rat from here in their rendered viewport, but the oview proc says they
+	// can't. This is because the view area is messed with in the case where the map is small, but that doesn't do
+	// anything for oview, so the two end up being different. This is expected behavior! Huh.
+	assert.Contains(t, lines, "You see...")
+	assert.Contains(t, lines, "The cheese.  It is quite smelly.")
+
+	playerAPI.Command(webclient.Command{Verb: ".west"})
+	playerAPI.Command(webclient.Command{Verb: "look"})
+	lines, _ = playerAPI.PullRequests()
+	assert.Equal(t, 3, len(lines))
+	assert.Contains(t, lines, "You see...")
+	assert.Contains(t, lines, "The cheese.  It is quite smelly.")
+	assert.Contains(t, lines, "The rat.  It's quite large.")
 }
