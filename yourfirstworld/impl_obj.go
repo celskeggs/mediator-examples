@@ -148,12 +148,18 @@ func (t *ObjImpl) Proc(src *types.Datum, usr *types.Datum, name string, params .
 	case "Stat":
 		return t.AtomData.ProcStat(src, usr), true
 	case "drop":
-		return t.ExtObjData.Procdrop(src, usr), true
+		return t.ExtObjData.Procdrop(src, usr, params), true
 	case "get":
-		return t.ExtObjData.Procget(src, usr), true
+		return t.ExtObjData.Procget(src, usr, params), true
 	default:
 		return nil, false
 	}
+}
+
+func (t *ObjImpl) SuperProc(src *types.Datum, usr *types.Datum, chunk string, name string, params ...types.Value) (types.Value, bool) {
+	switch chunk {
+	}
+	return nil, false
 }
 
 func (t *ObjImpl) ProcSettings(name string) (types.ProcSettings, bool) {

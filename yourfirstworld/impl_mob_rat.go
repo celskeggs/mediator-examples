@@ -164,6 +164,12 @@ func (t *MobRatImpl) Proc(src *types.Datum, usr *types.Datum, name string, param
 	}
 }
 
+func (t *MobRatImpl) SuperProc(src *types.Datum, usr *types.Datum, chunk string, name string, params ...types.Value) (types.Value, bool) {
+	switch chunk {
+	}
+	return nil, false
+}
+
 func (t *MobRatImpl) ProcSettings(name string) (types.ProcSettings, bool) {
 	switch name {
 	case "<<":

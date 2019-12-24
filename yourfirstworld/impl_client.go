@@ -100,6 +100,17 @@ func (t *ClientImpl) Proc(src *types.Datum, usr *types.Datum, name string, param
 	}
 }
 
+func (t *ClientImpl) SuperProc(src *types.Datum, usr *types.Datum, chunk string, name string, params ...types.Value) (types.Value, bool) {
+	switch chunk {
+	case "github.com/celskeggs/mediator/platform/world.ClientData":
+		switch name {
+		case "New":
+			return t.DatumData.ProcNew(src, usr), true
+		}
+	}
+	return nil, false
+}
+
 func (t *ClientImpl) ProcSettings(name string) (types.ProcSettings, bool) {
 	switch name {
 	case "<<":

@@ -142,7 +142,7 @@ func (t *MobPlayerImpl) Proc(src *types.Datum, usr *types.Datum, name string, pa
 	case "<<":
 		return t.MobData.OperatorWrite(src, usr, types.Param(params, 0)), true
 	case "Bump":
-		return t.MobPlayerData.ProcBump(src, usr, types.Param(params, 0)), true
+		return t.MobPlayerData.ProcBump(src, usr, params), true
 	case "Enter":
 		return t.AtomData.ProcEnter(src, usr, types.Param(params, 0), types.Param(params, 1)), true
 	case "Entered":
@@ -158,12 +158,25 @@ func (t *MobPlayerImpl) Proc(src *types.Datum, usr *types.Datum, name string, pa
 	case "New":
 		return t.DatumData.ProcNew(src, usr), true
 	case "Stat":
-		return t.MobPlayerData.ProcStat(src, usr), true
+		return t.MobPlayerData.ProcStat(src, usr, params), true
 	case "look":
-		return t.MobPlayerData.Proclook(src, usr), true
+		return t.MobPlayerData.Proclook(src, usr, params), true
 	default:
 		return nil, false
 	}
+}
+
+func (t *MobPlayerImpl) SuperProc(src *types.Datum, usr *types.Datum, chunk string, name string, params ...types.Value) (types.Value, bool) {
+	switch chunk {
+	case "github.com/celskeggs/mediator-examples/yourfirstworld.MobPlayerData":
+		switch name {
+		case "Bump":
+			return t.AtomData.ProcBump(src, usr, types.Param(params, 0)), true
+		case "Stat":
+			return t.AtomData.ProcStat(src, usr), true
+		}
+	}
+	return nil, false
 }
 
 func (t *MobPlayerImpl) ProcSettings(name string) (types.ProcSettings, bool) {

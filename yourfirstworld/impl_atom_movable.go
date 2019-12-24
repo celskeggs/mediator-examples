@@ -148,6 +148,12 @@ func (t *AtomMovableImpl) Proc(src *types.Datum, usr *types.Datum, name string, 
 	}
 }
 
+func (t *AtomMovableImpl) SuperProc(src *types.Datum, usr *types.Datum, chunk string, name string, params ...types.Value) (types.Value, bool) {
+	switch chunk {
+	}
+	return nil, false
+}
+
 func (t *AtomMovableImpl) ProcSettings(name string) (types.ProcSettings, bool) {
 	switch name {
 	case "Bump":

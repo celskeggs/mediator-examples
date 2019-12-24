@@ -162,6 +162,12 @@ func (t *MobImpl) Proc(src *types.Datum, usr *types.Datum, name string, params .
 	}
 }
 
+func (t *MobImpl) SuperProc(src *types.Datum, usr *types.Datum, chunk string, name string, params ...types.Value) (types.Value, bool) {
+	switch chunk {
+	}
+	return nil, false
+}
+
 func (t *MobImpl) ProcSettings(name string) (types.ProcSettings, bool) {
 	switch name {
 	case "<<":

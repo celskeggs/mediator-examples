@@ -141,7 +141,7 @@ func (t *AreaCaveImpl) Proc(src *types.Datum, usr *types.Datum, name string, par
 	case "Enter":
 		return t.AtomData.ProcEnter(src, usr, types.Param(params, 0), types.Param(params, 1)), true
 	case "Entered":
-		return t.ExtAreaData.ProcEntered(src, usr, types.Param(params, 0)), true
+		return t.ExtAreaData.ProcEntered(src, usr, params), true
 	case "Exit":
 		return t.AtomData.ProcExit(src, usr, types.Param(params, 0), types.Param(params, 1)), true
 	case "Exited":
@@ -155,6 +155,17 @@ func (t *AreaCaveImpl) Proc(src *types.Datum, usr *types.Datum, name string, par
 	default:
 		return nil, false
 	}
+}
+
+func (t *AreaCaveImpl) SuperProc(src *types.Datum, usr *types.Datum, chunk string, name string, params ...types.Value) (types.Value, bool) {
+	switch chunk {
+	case "github.com/celskeggs/mediator-examples/yourfirstworld.ExtAreaData":
+		switch name {
+		case "Entered":
+			return t.AtomData.ProcEntered(src, usr, types.Param(params, 0), types.Param(params, 1)), true
+		}
+	}
+	return nil, false
 }
 
 func (t *AreaCaveImpl) ProcSettings(name string) (types.ProcSettings, bool) {

@@ -151,6 +151,23 @@ func (t *TurfImpl) Proc(src *types.Datum, usr *types.Datum, name string, params 
 	}
 }
 
+func (t *TurfImpl) SuperProc(src *types.Datum, usr *types.Datum, chunk string, name string, params ...types.Value) (types.Value, bool) {
+	switch chunk {
+	case "github.com/celskeggs/mediator/platform/atoms.TurfData":
+		switch name {
+		case "Exit":
+			return t.AtomData.ProcExit(src, usr, types.Param(params, 0), types.Param(params, 1)), true
+		case "Enter":
+			return t.AtomData.ProcEnter(src, usr, types.Param(params, 0), types.Param(params, 1)), true
+		case "Exited":
+			return t.AtomData.ProcExited(src, usr, types.Param(params, 0), types.Param(params, 1)), true
+		case "Entered":
+			return t.AtomData.ProcEntered(src, usr, types.Param(params, 0), types.Param(params, 1)), true
+		}
+	}
+	return nil, false
+}
+
 func (t *TurfImpl) ProcSettings(name string) (types.ProcSettings, bool) {
 	switch name {
 	case "Bump":

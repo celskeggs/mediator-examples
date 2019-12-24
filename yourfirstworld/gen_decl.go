@@ -22,18 +22,19 @@ func NewMobPlayerData(src *types.Datum, _ *MobPlayerData, _ ...types.Value) {
 	src.SetVar("verbs", src.Var("verbs").Invoke(nil, "+", atoms.NewVerb("look", "/mob/player", "look")))
 }
 
-func (*MobPlayerData) ProcBump(varsrc *types.Datum, varusr *types.Datum, varobstacle types.Value) types.Value {
+func (chunk *MobPlayerData) ProcBump(varsrc *types.Datum, varusr *types.Datum, allargs []types.Value) (out types.Value) {
+	varobstacle := types.Param(allargs, 0)
 	(varsrc).Invoke(varusr, "<<", types.String("You bump into "+format.FormatMacro("the", varobstacle)+"."))
 	(varsrc).Invoke(varusr, "<<", procs.NewSound("ouch.wav"))
-	return nil
+	return out
 }
 
-func (*MobPlayerData) ProcStat(varsrc *types.Datum, varusr *types.Datum) types.Value {
+func (chunk *MobPlayerData) ProcStat(varsrc *types.Datum, varusr *types.Datum, allargs []types.Value) (out types.Value) {
 	_ = procs.Invoke(atoms.WorldOf(varsrc), varusr, "statpanel", types.String("Inventory"), varsrc.Var("contents"))
-	return nil
+	return out
 }
 
-func (*MobPlayerData) Proclook(varsrc *types.Datum, varusr *types.Datum) types.Value {
+func (chunk *MobPlayerData) Proclook(varsrc *types.Datum, varusr *types.Datum, allargs []types.Value) (out types.Value) {
 	(varsrc).Invoke(varusr, "<<", types.String("You see..."))
 	for _, varo := range datum.Elements(procs.Invoke(atoms.WorldOf(varsrc), varusr, "oview")) {
 		if !types.IsType(varo, "/atom/movable") {
@@ -41,7 +42,7 @@ func (*MobPlayerData) Proclook(varsrc *types.Datum, varusr *types.Datum) types.V
 		}
 		(varsrc).Invoke(varusr, "<<", types.String(format.FormatMacro("The", varo)+".  "+format.FormatMacro("The", (varo).Var("desc"))))
 	}
-	return nil
+	return out
 }
 
 //mediator:declare MobRatData /mob/rat /mob
@@ -83,10 +84,10 @@ func NewExtObjData(src *types.Datum, _ *ExtObjData, _ ...types.Value) {
 	src.SetVar("verbs", src.Var("verbs").Invoke(nil, "+", atoms.NewVerb("drop", "/obj", "drop")))
 }
 
-func (*ExtObjData) Procget(varsrc *types.Datum, varusr *types.Datum) types.Value {
+func (chunk *ExtObjData) Procget(varsrc *types.Datum, varusr *types.Datum, allargs []types.Value) (out types.Value) {
 	(varusr).Invoke(varusr, "<<", types.String("You get "+format.FormatMacro("the", varsrc)+"."))
 	_ = (varsrc).Invoke(varusr, "Move", varusr)
-	return nil
+	return out
 }
 
 func (*ExtObjData) SettingsForProcget() types.ProcSettings {
@@ -97,10 +98,11 @@ func (*ExtObjData) SettingsForProcget() types.ProcSettings {
 		},
 	}
 }
-func (*ExtObjData) Procdrop(varsrc *types.Datum, varusr *types.Datum) types.Value {
+
+func (chunk *ExtObjData) Procdrop(varsrc *types.Datum, varusr *types.Datum, allargs []types.Value) (out types.Value) {
 	(varusr).Invoke(varusr, "<<", types.String("You drop "+format.FormatMacro("the", varsrc)+"."))
 	_ = (varsrc).Invoke(varusr, "Move", (varusr).Var("loc"))
-	return nil
+	return out
 }
 
 func (*ExtObjData) SettingsForProcdrop() types.ProcSettings {
@@ -123,10 +125,10 @@ func NewObjCheeseData(src *types.Datum, _ *ObjCheeseData, _ ...types.Value) {
 	src.SetVar("verbs", src.Var("verbs").Invoke(nil, "+", atoms.NewVerb("eat", "/obj/cheese", "eat")))
 }
 
-func (*ObjCheeseData) Proceat(varsrc *types.Datum, varusr *types.Datum) types.Value {
+func (chunk *ObjCheeseData) Proceat(varsrc *types.Datum, varusr *types.Datum, allargs []types.Value) (out types.Value) {
 	(varusr).Invoke(varusr, "<<", types.String("You take a bite of the cheese. Bleck!"))
 	varsrc.SetVar("suffix", types.String("(nibbled)"))
-	return nil
+	return out
 }
 
 func (*ObjCheeseData) SettingsForProceat() types.ProcSettings {
@@ -149,12 +151,12 @@ func NewObjScrollData(src *types.Datum, _ *ObjScrollData, _ ...types.Value) {
 	src.SetVar("verbs", src.Var("verbs").Invoke(nil, "+", atoms.NewVerb("read", "/obj/scroll", "read")))
 }
 
-func (*ObjScrollData) Procread(varsrc *types.Datum, varusr *types.Datum) types.Value {
+func (chunk *ObjScrollData) Procread(varsrc *types.Datum, varusr *types.Datum, allargs []types.Value) (out types.Value) {
 	(varusr).Invoke(varusr, "<<", types.String("You utter the phrase written on the scroll: \"Knuth\"!"))
 	_ = atoms.WorldOf(varsrc).Realm().New("/mob/rat", varusr, (varusr).Var("loc"))
 	(varusr).Invoke(varusr, "<<", types.String("A giant rat appears!"))
 	types.Del(varsrc)
-	return nil
+	return out
 }
 
 func (*ObjScrollData) SettingsForProcread() types.ProcSettings {
@@ -174,13 +176,14 @@ type ExtAreaData struct {
 func NewExtAreaData(src *types.Datum, _ *ExtAreaData, _ ...types.Value) {
 }
 
-func (*ExtAreaData) ProcEntered(varsrc *types.Datum, varusr *types.Datum, varm types.Value) types.Value {
+func (chunk *ExtAreaData) ProcEntered(varsrc *types.Datum, varusr *types.Datum, allargs []types.Value) (out types.Value) {
+	varm := types.Param(allargs, 0)
 	if types.AsBool(procs.OperatorNot(procs.Invoke(atoms.WorldOf(varsrc), varusr, "ismob", varm))) {
-		return nil
+		return out
 	}
 	(varm).Invoke(varusr, "<<", varsrc.Var("desc"))
 	(varm).Invoke(varusr, "<<", procs.KWInvoke(atoms.WorldOf(varsrc), varusr, "sound", map[string]types.Value{"channel": types.Int(1)}, varsrc.Var("music"), types.Int(1)))
-	return nil
+	return out
 }
 
 func (*ExtAreaData) SettingsForProcEntered() types.ProcSettings {
