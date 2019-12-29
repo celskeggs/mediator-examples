@@ -13,6 +13,7 @@ type ObjCheeseImpl struct {
 	ExtObjData
 	atoms.AtomMovableData
 	atoms.AtomData
+	ExtAtomData
 	datum.DatumData
 }
 
@@ -20,6 +21,7 @@ func NewObjCheese(realm *types.Realm, params ...types.Value) *types.Datum {
 	i := &ObjCheeseImpl{}
 	d := realm.NewDatum(i)
 	datum.NewDatumData(d, &i.DatumData, params...)
+	NewExtAtomData(d, &i.ExtAtomData, params...)
 	atoms.NewAtomData(d, &i.AtomData, params...)
 	atoms.NewAtomMovableData(d, &i.AtomMovableData, params...)
 	NewExtObjData(d, &i.ExtObjData, params...)
@@ -134,6 +136,8 @@ func (t *ObjCheeseImpl) Proc(src *types.Datum, usr *types.Datum, name string, pa
 	switch name {
 	case "Bump":
 		return t.AtomData.ProcBump(src, usr, types.Param(params, 0)), true
+	case "Bumped":
+		return t.ExtAtomData.ProcBumped(src, usr, params), true
 	case "Enter":
 		return t.AtomData.ProcEnter(src, usr, types.Param(params, 0), types.Param(params, 1)), true
 	case "Entered":
@@ -143,7 +147,7 @@ func (t *ObjCheeseImpl) Proc(src *types.Datum, usr *types.Datum, name string, pa
 	case "Exited":
 		return t.AtomData.ProcExited(src, usr, types.Param(params, 0), types.Param(params, 1)), true
 	case "Move":
-		return t.AtomData.ProcMove(src, usr, types.Param(params, 0), types.Param(params, 1)), true
+		return t.ObjCheeseData.ProcMove(src, usr, params), true
 	case "New":
 		return t.DatumData.ProcNew(src, usr), true
 	case "Stat":
@@ -161,6 +165,11 @@ func (t *ObjCheeseImpl) Proc(src *types.Datum, usr *types.Datum, name string, pa
 
 func (t *ObjCheeseImpl) SuperProc(src *types.Datum, usr *types.Datum, chunk string, name string, params ...types.Value) (types.Value, bool) {
 	switch chunk {
+	case "github.com/celskeggs/mediator-examples/yourfirstworld.ObjCheeseData":
+		switch name {
+		case "Move":
+			return t.AtomData.ProcMove(src, usr, types.Param(params, 0), types.Param(params, 1)), true
+		}
 	}
 	return nil, false
 }
@@ -168,6 +177,8 @@ func (t *ObjCheeseImpl) SuperProc(src *types.Datum, usr *types.Datum, chunk stri
 func (t *ObjCheeseImpl) ProcSettings(name string) (types.ProcSettings, bool) {
 	switch name {
 	case "Bump":
+		return types.ProcSettings{}, true
+	case "Bumped":
 		return types.ProcSettings{}, true
 	case "Enter":
 		return types.ProcSettings{}, true
@@ -178,7 +189,7 @@ func (t *ObjCheeseImpl) ProcSettings(name string) (types.ProcSettings, bool) {
 	case "Exited":
 		return types.ProcSettings{}, true
 	case "Move":
-		return types.ProcSettings{}, true
+		return t.ObjCheeseData.SettingsForProcMove(), true
 	case "New":
 		return types.ProcSettings{}, true
 	case "Stat":
@@ -206,6 +217,8 @@ func (t *ObjCheeseImpl) Chunk(ref string) interface{} {
 		return &t.AtomMovableData
 	case "github.com/celskeggs/mediator/platform/atoms.AtomData":
 		return &t.AtomData
+	case "github.com/celskeggs/mediator-examples/yourfirstworld.ExtAtomData":
+		return &t.ExtAtomData
 	case "github.com/celskeggs/mediator/platform/datum.DatumData":
 		return &t.DatumData
 	default:

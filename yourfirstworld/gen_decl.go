@@ -22,7 +22,7 @@ func NewMobPlayerData(src *types.Datum, _ *MobPlayerData, _ ...types.Value) {
 	src.SetVar("verbs", src.Var("verbs").Invoke(nil, "+", atoms.NewVerb("look", "/mob/player", "look")))
 }
 
-func (chunk *MobPlayerData) ProcBump(varsrc *types.Datum, varusr *types.Datum, allargs []types.Value) (out types.Value) {
+func (chunk *MobPlayerData) Shadow0ForProcBump(varsrc *types.Datum, varusr *types.Datum, allargs []types.Value) (out types.Value) {
 	varobstacle := types.Param(allargs, 0)
 	(varsrc).Invoke(varusr, "<<", types.String("You bump into "+format.FormatMacro("the", varobstacle)+"."))
 	(varsrc).Invoke(varusr, "<<", procs.NewSound("ouch.wav"))
@@ -45,6 +45,13 @@ func (chunk *MobPlayerData) Proclook(varsrc *types.Datum, varusr *types.Datum, a
 	return out
 }
 
+func (chunk *MobPlayerData) ProcBump(varsrc *types.Datum, varusr *types.Datum, allargs []types.Value) (out types.Value) {
+	varobstacle := types.Param(allargs, 0)
+	_ = chunk.Shadow0ForProcBump(varsrc, varusr, allargs)
+	_ = (varobstacle).Invoke(varusr, "Bumped", varsrc)
+	return out
+}
+
 //mediator:declare MobRatData /mob/rat /mob
 type MobRatData struct {
 }
@@ -53,6 +60,14 @@ func NewMobRatData(src *types.Datum, _ *MobRatData, _ ...types.Value) {
 	src.SetVar("icon", atoms.WorldOf(src).Icon("rat.dmi"))
 	src.SetVar("desc", types.String("It's quite large."))
 	src.SetVar("name", types.String("rat"))
+}
+
+func (chunk *MobRatData) ProcBumped(varsrc *types.Datum, varusr *types.Datum, allargs []types.Value) (out types.Value) {
+	varbumper := types.Param(allargs, 0)
+	(varbumper).Invoke(varusr, "<<", types.String("The giant rat defends its territory ferociously!"))
+	varsrc.SetVar("dir", procs.Invoke(atoms.WorldOf(varsrc), varusr, "get_dir", varsrc, varbumper))
+	_ = procs.Invoke(atoms.WorldOf(varsrc), varusr, "flick", types.String("fight"), varsrc)
+	return out
 }
 
 //mediator:declare TurfFloorData /turf/floor /turf
@@ -140,6 +155,26 @@ func (*ObjCheeseData) SettingsForProceat() types.ProcSettings {
 	}
 }
 
+func (chunk *ObjCheeseData) ProcMove(varsrc *types.Datum, varusr *types.Datum, allargs []types.Value) (out types.Value) {
+	out = varsrc.SuperInvoke(varusr, "github.com/celskeggs/mediator-examples/yourfirstworld.ObjCheeseData", "Move", allargs...)
+	for _, varrat := range datum.Elements(procs.Invoke(atoms.WorldOf(varsrc), varusr, "view", varsrc.Var("loc"))) {
+		if !types.IsType(varrat, "/mob/rat") {
+			continue
+		}
+		_ = procs.Invoke(atoms.WorldOf(varsrc), varusr, "walk_to", varrat, varsrc.Var("loc"), types.Int(1), types.Int(5))
+	}
+	return out
+}
+
+func (*ObjCheeseData) SettingsForProcMove() types.ProcSettings {
+	return types.ProcSettings{
+		Src: types.SrcSetting{
+			Type: types.SrcSettingTypeUsr,
+			In:   true,
+		},
+	}
+}
+
 //mediator:declare ObjScrollData /obj/scroll /obj
 type ObjScrollData struct {
 }
@@ -212,6 +247,17 @@ func NewAreaCaveData(src *types.Datum, _ *AreaCaveData, _ ...types.Value) {
 	src.SetVar("desc", types.String("Watch out for the giant rat!"))
 	src.SetVar("music", procs.NewSound("cavern.mid"))
 	src.SetVar("name", types.String("cave"))
+}
+
+//mediator:extend ExtAtomData /atom
+type ExtAtomData struct {
+}
+
+func NewExtAtomData(src *types.Datum, _ *ExtAtomData, _ ...types.Value) {
+}
+
+func (chunk *ExtAtomData) ProcBumped(varsrc *types.Datum, varusr *types.Datum, allargs []types.Value) (out types.Value) {
+	return out
 }
 
 func BeforeMap(world *world.World) []string {

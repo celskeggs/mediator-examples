@@ -11,6 +11,7 @@ type TurfWallImpl struct {
 	TurfWallData
 	atoms.TurfData
 	atoms.AtomData
+	ExtAtomData
 	datum.DatumData
 }
 
@@ -18,6 +19,7 @@ func NewTurfWall(realm *types.Realm, params ...types.Value) *types.Datum {
 	i := &TurfWallImpl{}
 	d := realm.NewDatum(i)
 	datum.NewDatumData(d, &i.DatumData, params...)
+	NewExtAtomData(d, &i.ExtAtomData, params...)
 	atoms.NewAtomData(d, &i.AtomData, params...)
 	atoms.NewTurfData(d, &i.TurfData, params...)
 	NewTurfWallData(d, &i.TurfWallData, params...)
@@ -133,6 +135,8 @@ func (t *TurfWallImpl) Proc(src *types.Datum, usr *types.Datum, name string, par
 	switch name {
 	case "Bump":
 		return t.AtomData.ProcBump(src, usr, types.Param(params, 0)), true
+	case "Bumped":
+		return t.ExtAtomData.ProcBumped(src, usr, params), true
 	case "Enter":
 		return t.TurfData.ProcEnter(src, usr, types.Param(params, 0), types.Param(params, 1)), true
 	case "Entered":
@@ -173,6 +177,8 @@ func (t *TurfWallImpl) ProcSettings(name string) (types.ProcSettings, bool) {
 	switch name {
 	case "Bump":
 		return types.ProcSettings{}, true
+	case "Bumped":
+		return types.ProcSettings{}, true
 	case "Enter":
 		return types.ProcSettings{}, true
 	case "Entered":
@@ -200,6 +206,8 @@ func (t *TurfWallImpl) Chunk(ref string) interface{} {
 		return &t.TurfData
 	case "github.com/celskeggs/mediator/platform/atoms.AtomData":
 		return &t.AtomData
+	case "github.com/celskeggs/mediator-examples/yourfirstworld.ExtAtomData":
+		return &t.ExtAtomData
 	case "github.com/celskeggs/mediator/platform/datum.DatumData":
 		return &t.DatumData
 	default:

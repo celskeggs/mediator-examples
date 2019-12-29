@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/celskeggs/mediator/common"
 	"github.com/celskeggs/mediator/platform/atoms"
 	"github.com/celskeggs/mediator/platform/datum"
 	"github.com/celskeggs/mediator/platform/types"
@@ -483,4 +484,47 @@ func TestDisappearingRat(t *testing.T) {
 	assert.Contains(t, lines, "You see...")
 	assert.Contains(t, lines, "The cheese.  It is quite smelly.")
 	assert.Contains(t, lines, "The rat.  It's quite large.")
+}
+
+func TestBumpAngryRat(t *testing.T) {
+	gameworld := BuildWorld()
+	serverAPI := gameworld.ServerAPI()
+	playerAPI := serverAPI.AddPlayer()
+
+	player := gameworld.FindOneType("/mob/player")
+	assert.NotNil(t, player)
+	rat := gameworld.FindOneType("/mob/rat")
+	assert.NotNil(t, rat)
+	x, y, z := world.XYZ(rat)
+	loc := gameworld.LocateXYZ(x+1, y, z)
+	assert.NotNil(t, loc)
+	ok := types.Unint(player.Invoke(nil, "Move", loc))
+	assert.Equal(t, 1, ok)
+	_, _, flicks := playerAPI.PullRequests()
+	assert.Equal(t, 0, len(flicks))
+
+	playerAPI.Command(webclient.Command{Verb: ".west"})
+	lines, sounds, flicks := playerAPI.PullRequests()
+	assert.Equal(t, 2, len(lines))
+	if len(lines) >= 1 {
+		assert.Contains(t, lines, "You bump into the rat.")
+		assert.Contains(t, lines, "The giant rat defends its territory ferociously!")
+	}
+	assert.Equal(t, 1, len(sounds))
+	if len(sounds) >= 1 {
+		assert.Equal(t, "ouch.wav", sounds[0].File)
+	}
+	assert.Equal(t, 1, len(flicks))
+	if len(flicks) >= 1 {
+		assert.Equal(t, "rat.dmi", flicks[0].Icon)
+		assert.Equal(t, 3, len(flicks[0].Frames))
+		assert.Equal(t, rat.(*types.Datum).UID(), flicks[0].UID)
+	}
+
+	assert.Equal(t, common.East, rat.Var("dir"))
+}
+
+func TestRatScurryingTowardsCheese(t *testing.T) {
+	util.FIXME("test cheese scurrying")
+	t.Skip()
 }

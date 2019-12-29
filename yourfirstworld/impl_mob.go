@@ -11,6 +11,7 @@ type MobImpl struct {
 	atoms.MobData
 	atoms.AtomMovableData
 	atoms.AtomData
+	ExtAtomData
 	datum.DatumData
 }
 
@@ -18,6 +19,7 @@ func NewMob(realm *types.Realm, params ...types.Value) *types.Datum {
 	i := &MobImpl{}
 	d := realm.NewDatum(i)
 	datum.NewDatumData(d, &i.DatumData, params...)
+	NewExtAtomData(d, &i.ExtAtomData, params...)
 	atoms.NewAtomData(d, &i.AtomData, params...)
 	atoms.NewAtomMovableData(d, &i.AtomMovableData, params...)
 	atoms.NewMobData(d, &i.MobData, params...)
@@ -140,6 +142,8 @@ func (t *MobImpl) Proc(src *types.Datum, usr *types.Datum, name string, params .
 		return t.MobData.OperatorWrite(src, usr, types.Param(params, 0)), true
 	case "Bump":
 		return t.AtomData.ProcBump(src, usr, types.Param(params, 0)), true
+	case "Bumped":
+		return t.ExtAtomData.ProcBumped(src, usr, params), true
 	case "Enter":
 		return t.AtomData.ProcEnter(src, usr, types.Param(params, 0), types.Param(params, 1)), true
 	case "Entered":
@@ -173,6 +177,8 @@ func (t *MobImpl) ProcSettings(name string) (types.ProcSettings, bool) {
 		return types.ProcSettings{}, true
 	case "Bump":
 		return types.ProcSettings{}, true
+	case "Bumped":
+		return types.ProcSettings{}, true
 	case "Enter":
 		return types.ProcSettings{}, true
 	case "Entered":
@@ -202,6 +208,8 @@ func (t *MobImpl) Chunk(ref string) interface{} {
 		return &t.AtomMovableData
 	case "github.com/celskeggs/mediator/platform/atoms.AtomData":
 		return &t.AtomData
+	case "github.com/celskeggs/mediator-examples/yourfirstworld.ExtAtomData":
+		return &t.ExtAtomData
 	case "github.com/celskeggs/mediator/platform/datum.DatumData":
 		return &t.DatumData
 	default:

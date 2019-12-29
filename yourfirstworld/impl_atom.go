@@ -9,6 +9,7 @@ import (
 
 type AtomImpl struct {
 	atoms.AtomData
+	ExtAtomData
 	datum.DatumData
 }
 
@@ -16,6 +17,7 @@ func NewAtom(realm *types.Realm, params ...types.Value) *types.Datum {
 	i := &AtomImpl{}
 	d := realm.NewDatum(i)
 	datum.NewDatumData(d, &i.DatumData, params...)
+	NewExtAtomData(d, &i.ExtAtomData, params...)
 	atoms.NewAtomData(d, &i.AtomData, params...)
 	return d
 }
@@ -126,6 +128,8 @@ func (t *AtomImpl) Proc(src *types.Datum, usr *types.Datum, name string, params 
 	switch name {
 	case "Bump":
 		return t.AtomData.ProcBump(src, usr, types.Param(params, 0)), true
+	case "Bumped":
+		return t.ExtAtomData.ProcBumped(src, usr, params), true
 	case "Enter":
 		return t.AtomData.ProcEnter(src, usr, types.Param(params, 0), types.Param(params, 1)), true
 	case "Entered":
@@ -155,6 +159,8 @@ func (t *AtomImpl) ProcSettings(name string) (types.ProcSettings, bool) {
 	switch name {
 	case "Bump":
 		return types.ProcSettings{}, true
+	case "Bumped":
+		return types.ProcSettings{}, true
 	case "Enter":
 		return types.ProcSettings{}, true
 	case "Entered":
@@ -178,6 +184,8 @@ func (t *AtomImpl) Chunk(ref string) interface{} {
 	switch ref {
 	case "github.com/celskeggs/mediator/platform/atoms.AtomData":
 		return &t.AtomData
+	case "github.com/celskeggs/mediator-examples/yourfirstworld.ExtAtomData":
+		return &t.ExtAtomData
 	case "github.com/celskeggs/mediator/platform/datum.DatumData":
 		return &t.DatumData
 	default:

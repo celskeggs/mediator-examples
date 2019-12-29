@@ -21,6 +21,7 @@ FILE: readme/readme.html
 #include "main-a.dm"
 #include "main-b.dm"
 #include "main-c.dm"
+#include "main-d.dm"
 #include "map.dmm"
 // END_INCLUDE
 

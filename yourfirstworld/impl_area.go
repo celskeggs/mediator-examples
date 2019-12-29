@@ -11,6 +11,7 @@ type AreaImpl struct {
 	atoms.AreaData
 	ExtAreaData
 	atoms.AtomData
+	ExtAtomData
 	datum.DatumData
 }
 
@@ -18,6 +19,7 @@ func NewArea(realm *types.Realm, params ...types.Value) *types.Datum {
 	i := &AreaImpl{}
 	d := realm.NewDatum(i)
 	datum.NewDatumData(d, &i.DatumData, params...)
+	NewExtAtomData(d, &i.ExtAtomData, params...)
 	atoms.NewAtomData(d, &i.AtomData, params...)
 	NewExtAreaData(d, &i.ExtAreaData, params...)
 	atoms.NewAreaData(d, &i.AreaData, params...)
@@ -135,6 +137,8 @@ func (t *AreaImpl) Proc(src *types.Datum, usr *types.Datum, name string, params 
 	switch name {
 	case "Bump":
 		return t.AtomData.ProcBump(src, usr, types.Param(params, 0)), true
+	case "Bumped":
+		return t.ExtAtomData.ProcBumped(src, usr, params), true
 	case "Enter":
 		return t.AtomData.ProcEnter(src, usr, types.Param(params, 0), types.Param(params, 1)), true
 	case "Entered":
@@ -169,6 +173,8 @@ func (t *AreaImpl) ProcSettings(name string) (types.ProcSettings, bool) {
 	switch name {
 	case "Bump":
 		return types.ProcSettings{}, true
+	case "Bumped":
+		return types.ProcSettings{}, true
 	case "Enter":
 		return types.ProcSettings{}, true
 	case "Entered":
@@ -196,6 +202,8 @@ func (t *AreaImpl) Chunk(ref string) interface{} {
 		return &t.ExtAreaData
 	case "github.com/celskeggs/mediator/platform/atoms.AtomData":
 		return &t.AtomData
+	case "github.com/celskeggs/mediator-examples/yourfirstworld.ExtAtomData":
+		return &t.ExtAtomData
 	case "github.com/celskeggs/mediator/platform/datum.DatumData":
 		return &t.DatumData
 	default:
