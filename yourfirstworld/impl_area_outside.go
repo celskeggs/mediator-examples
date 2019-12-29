@@ -2,7 +2,6 @@
 package main
 
 import (
-	"github.com/celskeggs/mediator/common"
 	"github.com/celskeggs/mediator/platform/atoms"
 	"github.com/celskeggs/mediator/platform/datum"
 	"github.com/celskeggs/mediator/platform/types"
@@ -41,8 +40,6 @@ func (t *AreaOutsideImpl) Var(src *types.Datum, name string) (types.Value, bool)
 		return t.AtomData.VarAppearance, true
 	case "density":
 		return types.Int(t.AtomData.VarDensity), true
-	case "dir":
-		return t.AtomData.VarDir, true
 	case "music":
 		return t.ExtAreaData.VarMusic, true
 	case "opacity":
@@ -53,6 +50,8 @@ func (t *AreaOutsideImpl) Var(src *types.Datum, name string) (types.Value, bool)
 		return t.AtomData.GetContents(src), true
 	case "desc":
 		return t.AtomData.GetDesc(src), true
+	case "dir":
+		return t.AtomData.GetDir(src), true
 	case "icon":
 		return t.AtomData.GetIcon(src), true
 	case "icon_state":
@@ -88,9 +87,6 @@ func (t *AreaOutsideImpl) SetVar(src *types.Datum, name string, value types.Valu
 	case "density":
 		t.AtomData.VarDensity = types.Unint(value)
 		return types.SetResultOk
-	case "dir":
-		t.AtomData.VarDir = value.(common.Direction)
-		return types.SetResultOk
 	case "music":
 		t.ExtAreaData.VarMusic = value.(types.Value)
 		return types.SetResultOk
@@ -104,6 +100,9 @@ func (t *AreaOutsideImpl) SetVar(src *types.Datum, name string, value types.Valu
 		return types.SetResultReadOnly
 	case "desc":
 		t.AtomData.SetDesc(src, value)
+		return types.SetResultOk
+	case "dir":
+		t.AtomData.SetDir(src, value)
 		return types.SetResultOk
 	case "icon":
 		t.AtomData.SetIcon(src, value)

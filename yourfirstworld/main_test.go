@@ -144,7 +144,7 @@ func TestWalkBetweenAreas(t *testing.T) {
 	player.SetVar("loc", gameworld.LocateXYZ(11, 4, 1))
 	assert.Equal(t, types.TypePath("/area/outside"), atoms.ContainingArea(player).(*types.Datum).Type())
 
-	lines, sounds := playerAPI.PullRequests()
+	lines, sounds, _ := playerAPI.PullRequests()
 	assert.Equal(t, 1, len(lines))
 	assert.Contains(t, lines, "Nice and jazzy, here...")
 	assert.Equal(t, 1, len(sounds))
@@ -153,7 +153,7 @@ func TestWalkBetweenAreas(t *testing.T) {
 	}
 
 	playerAPI.Command(webclient.Command{Verb: ".west"})
-	lines, sounds = playerAPI.PullRequests()
+	lines, sounds, _ = playerAPI.PullRequests()
 	assert.Equal(t, 1, len(lines))
 	assert.Contains(t, lines, "Watch out for the giant rat!")
 	assert.Equal(t, 1, len(sounds))
@@ -175,7 +175,7 @@ func TestStepOffMap(t *testing.T) {
 	assert.Equal(t, uint(1), cx)
 	assert.Equal(t, uint(1), cy)
 
-	lines, sounds := playerAPI.PullRequests()
+	lines, sounds, _ := playerAPI.PullRequests()
 	assert.Equal(t, 1, len(lines))
 	assert.Contains(t, lines, "Nice and jazzy, here...")
 	assert.Equal(t, 1, len(sounds))
@@ -184,7 +184,7 @@ func TestStepOffMap(t *testing.T) {
 	}
 
 	playerAPI.Command(webclient.Command{Verb: ".south"})
-	lines, sounds = playerAPI.PullRequests()
+	lines, sounds, _ = playerAPI.PullRequests()
 	assert.Equal(t, 0, len(lines))
 	assert.Equal(t, 0, len(sounds))
 	nx, ny := world.XY(player)
@@ -198,13 +198,13 @@ func TestWalkIntoWalls(t *testing.T) {
 
 	player := gameworld.FindOneType("/mob/player")
 	assert.NotNil(t, player)
-	_, _ = playerAPI.PullRequests()
+	_, _, _ = playerAPI.PullRequests()
 
 	player.SetVar("loc", gameworld.LocateXYZ(6, 4, 1))
 	assert.Equal(t, types.TypePath("/area/outside"), atoms.ContainingArea(player).(*types.Datum).Type())
 
 	playerAPI.Command(webclient.Command{Verb: ".north"})
-	lines, sounds := playerAPI.PullRequests()
+	lines, sounds, _ := playerAPI.PullRequests()
 	assert.Equal(t, 1, len(lines))
 	if len(lines) >= 1 {
 		assert.Contains(t, lines, "You bump into the wall.")
@@ -247,10 +247,10 @@ func TestLookVerb(t *testing.T) {
 
 	player := gameworld.FindOneType("/mob/player")
 	assert.NotNil(t, player)
-	_, _ = playerAPI.PullRequests()
+	_, _, _ = playerAPI.PullRequests()
 
 	playerAPI.Command(webclient.Command{Verb: "look"})
-	lines, _ := playerAPI.PullRequests()
+	lines, _, _ := playerAPI.PullRequests()
 	assert.Equal(t, 2, len(lines))
 	assert.Contains(t, lines, "You see...")
 	assert.Contains(t, lines, "The scroll.  It looks to be rather old.")
@@ -273,7 +273,7 @@ func TestGetDropVerbs(t *testing.T) {
 	assert.NotNil(t, player)
 	scroll := gameworld.FindOneType("/obj/scroll")
 	assert.NotNil(t, scroll)
-	_, _ = playerAPI.PullRequests()
+	_, _, _ = playerAPI.PullRequests()
 
 	for x := types.Unuint(player.Var("x")); x < types.Unuint(scroll.Var("x")); x++ {
 		playerAPI.Command(webclient.Command{Verb: ".east"})
@@ -283,7 +283,7 @@ func TestGetDropVerbs(t *testing.T) {
 	}
 
 	playerAPI.Command(webclient.Command{Verb: "get"})
-	lines, _ := playerAPI.PullRequests()
+	lines, _, _ := playerAPI.PullRequests()
 	assert.Equal(t, 1, len(lines))
 	assert.Contains(t, lines, "You get the scroll.")
 
@@ -298,21 +298,21 @@ func TestGetDropVerbs(t *testing.T) {
 	assert.Equal(t, player, scroll.Var("loc"))
 
 	playerAPI.Command(webclient.Command{Verb: "drop"})
-	lines, _ = playerAPI.PullRequests()
+	lines, _, _ = playerAPI.PullRequests()
 	assert.Equal(t, 1, len(lines))
 	assert.Contains(t, lines, "You drop the scroll.")
 
 	assert.Equal(t, player.Var("loc"), scroll.Var("loc"))
 
 	playerAPI.Command(webclient.Command{Verb: "get scroll"})
-	lines, _ = playerAPI.PullRequests()
+	lines, _, _ = playerAPI.PullRequests()
 	assert.Equal(t, 1, len(lines))
 	assert.Contains(t, lines, "You get the scroll.")
 
 	assert.Equal(t, player, scroll.Var("loc"))
 
 	playerAPI.Command(webclient.Command{Verb: "drop cheese"})
-	lines, _ = playerAPI.PullRequests()
+	lines, _, _ = playerAPI.PullRequests()
 	assert.Equal(t, 1, len(lines))
 	assert.Contains(t, lines, "Not a known verb: \"drop\"")
 
@@ -320,7 +320,7 @@ func TestGetDropVerbs(t *testing.T) {
 	assert.Equal(t, player, scroll.Var("loc"))
 
 	playerAPI.Command(webclient.Command{Verb: "drop scroll"})
-	lines, _ = playerAPI.PullRequests()
+	lines, _, _ = playerAPI.PullRequests()
 	assert.Equal(t, 1, len(lines))
 	assert.Contains(t, lines, "You drop the scroll.")
 
@@ -340,29 +340,29 @@ func TestEatVerb(t *testing.T) {
 	assert.NotNil(t, cheese)
 	ok := types.Unint(player.Invoke(nil, "Move", cheese.Var("loc")))
 	assert.Equal(t, 1, ok)
-	_, _ = playerAPI.PullRequests()
+	_, _, _ = playerAPI.PullRequests()
 
 	playerAPI.Command(webclient.Command{Verb: "eat cheese"})
-	lines, _ := playerAPI.PullRequests()
+	lines, _, _ := playerAPI.PullRequests()
 	assert.Equal(t, 1, len(lines))
 	assert.Contains(t, lines, "Not a known verb: \"eat\"")
 
 	playerAPI.Command(webclient.Command{Verb: "get cheese"})
-	lines, _ = playerAPI.PullRequests()
+	lines, _, _ = playerAPI.PullRequests()
 	assert.Equal(t, 1, len(lines))
 	assert.Contains(t, lines, "You get the cheese.")
 
 	assert.Equal(t, "", types.Unstring(cheese.Var("suffix")))
 
 	playerAPI.Command(webclient.Command{Verb: "eat cheese"})
-	lines, _ = playerAPI.PullRequests()
+	lines, _, _ = playerAPI.PullRequests()
 	assert.Equal(t, 1, len(lines))
 	assert.Contains(t, lines, "You take a bite of the cheese. Bleck!")
 
 	assert.Equal(t, "(nibbled)", types.Unstring(cheese.Var("suffix")))
 
 	playerAPI.Command(webclient.Command{Verb: "drop cheese"})
-	lines, _ = playerAPI.PullRequests()
+	lines, _, _ = playerAPI.PullRequests()
 	assert.Equal(t, 1, len(lines))
 	assert.Contains(t, lines, "You drop the cheese.")
 
@@ -381,13 +381,13 @@ func TestReadVerb(t *testing.T) {
 	assert.NotNil(t, scroll)
 	ok := types.Unint(player.Invoke(nil, "Move", scroll.Var("loc")))
 	assert.Equal(t, 1, ok)
-	_, _ = playerAPI.PullRequests()
+	_, _, _ = playerAPI.PullRequests()
 
 	rats := gameworld.FindAllType("/mob/rat")
 	assert.Equal(t, 1, len(rats))
 
 	playerAPI.Command(webclient.Command{Verb: "get scroll"})
-	lines, _ := playerAPI.PullRequests()
+	lines, _, _ := playerAPI.PullRequests()
 	assert.Equal(t, 1, len(lines))
 	assert.Contains(t, lines, "You get the scroll.")
 
@@ -402,7 +402,7 @@ func TestReadVerb(t *testing.T) {
 	assert.Equal(t, 1, len(gameworld.FindAllType("/obj/scroll")))
 
 	playerAPI.Command(webclient.Command{Verb: "read scroll"})
-	lines, _ = playerAPI.PullRequests()
+	lines, _, _ = playerAPI.PullRequests()
 	assert.Equal(t, 2, len(lines))
 	assert.Contains(t, lines, "You utter the phrase written on the scroll: \"Knuth\"!")
 	assert.Contains(t, lines, "A giant rat appears!")
@@ -464,11 +464,11 @@ func TestDisappearingRat(t *testing.T) {
 	assert.NotNil(t, cheese)
 	ok := types.Unint(player.Invoke(nil, "Move", cheese.Var("loc")))
 	assert.Equal(t, 1, ok)
-	_, _ = playerAPI.PullRequests()
+	_, _, _ = playerAPI.PullRequests()
 
 	playerAPI.Command(webclient.Command{Verb: ".south"})
 	playerAPI.Command(webclient.Command{Verb: "look"})
-	lines, _ := playerAPI.PullRequests()
+	lines, _, _ := playerAPI.PullRequests()
 	assert.Equal(t, 2, len(lines))
 	// Weirdly enough, the player *can* see the rat from here in their rendered viewport, but the oview proc says they
 	// can't. This is because the view area is messed with in the case where the map is small, but that doesn't do
@@ -478,7 +478,7 @@ func TestDisappearingRat(t *testing.T) {
 
 	playerAPI.Command(webclient.Command{Verb: ".west"})
 	playerAPI.Command(webclient.Command{Verb: "look"})
-	lines, _ = playerAPI.PullRequests()
+	lines, _, _ = playerAPI.PullRequests()
 	assert.Equal(t, 3, len(lines))
 	assert.Contains(t, lines, "You see...")
 	assert.Contains(t, lines, "The cheese.  It is quite smelly.")

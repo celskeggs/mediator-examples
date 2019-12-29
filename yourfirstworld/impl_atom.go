@@ -2,7 +2,6 @@
 package main
 
 import (
-	"github.com/celskeggs/mediator/common"
 	"github.com/celskeggs/mediator/platform/atoms"
 	"github.com/celskeggs/mediator/platform/datum"
 	"github.com/celskeggs/mediator/platform/types"
@@ -35,8 +34,6 @@ func (t *AtomImpl) Var(src *types.Datum, name string) (types.Value, bool) {
 		return t.AtomData.VarAppearance, true
 	case "density":
 		return types.Int(t.AtomData.VarDensity), true
-	case "dir":
-		return t.AtomData.VarDir, true
 	case "opacity":
 		return types.Int(t.AtomData.VarOpacity), true
 	case "verbs":
@@ -45,6 +42,8 @@ func (t *AtomImpl) Var(src *types.Datum, name string) (types.Value, bool) {
 		return t.AtomData.GetContents(src), true
 	case "desc":
 		return t.AtomData.GetDesc(src), true
+	case "dir":
+		return t.AtomData.GetDir(src), true
 	case "icon":
 		return t.AtomData.GetIcon(src), true
 	case "icon_state":
@@ -80,9 +79,6 @@ func (t *AtomImpl) SetVar(src *types.Datum, name string, value types.Value) type
 	case "density":
 		t.AtomData.VarDensity = types.Unint(value)
 		return types.SetResultOk
-	case "dir":
-		t.AtomData.VarDir = value.(common.Direction)
-		return types.SetResultOk
 	case "opacity":
 		t.AtomData.VarOpacity = types.Unint(value)
 		return types.SetResultOk
@@ -93,6 +89,9 @@ func (t *AtomImpl) SetVar(src *types.Datum, name string, value types.Value) type
 		return types.SetResultReadOnly
 	case "desc":
 		t.AtomData.SetDesc(src, value)
+		return types.SetResultOk
+	case "dir":
+		t.AtomData.SetDir(src, value)
 		return types.SetResultOk
 	case "icon":
 		t.AtomData.SetIcon(src, value)
