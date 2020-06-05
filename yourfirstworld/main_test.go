@@ -525,6 +525,42 @@ func TestBumpAngryRat(t *testing.T) {
 }
 
 func TestRatScurryingTowardsCheese(t *testing.T) {
-	util.FIXME("test cheese scurrying")
-	t.Skip()
+	gameworld := BuildWorld()
+	serverAPI := gameworld.ServerAPI()
+
+	cheese := gameworld.FindOneType("/obj/cheese")
+	assert.NotNil(t, cheese)
+	rat := gameworld.FindOneType("/mob/rat")
+	assert.NotNil(t, rat)
+	x, y, z := world.XYZ(rat)
+	l0 := gameworld.LocateXYZ(x, y, z)
+	l1 := gameworld.LocateXYZ(x+1, y, z)
+	l2 := gameworld.LocateXYZ(x+2, y, z)
+	l3 := gameworld.LocateXYZ(x+3, y, z)
+	assert.NotNil(t, l0)
+	assert.NotNil(t, l1)
+	assert.NotNil(t, l2)
+	assert.NotNil(t, l3)
+	assert.Equal(t, l0, rat.Var("loc"))
+	ok := types.Unint(cheese.Invoke(nil, "Move", l3))
+	assert.Equal(t, 1, ok)
+
+	ws := atoms.GetWalkState(rat)
+	assert.Equal(t, l3, ws.WalkTarget)
+
+	for i := 0; i < 5; i++ {
+		assert.Equal(t, l0, rat.Var("loc"))
+		assert.Equal(t, common.South, rat.Var("dir"))
+		serverAPI.Tick()
+	}
+	for i := 0; i < 5; i++ {
+		assert.Equal(t, l1, rat.Var("loc"))
+		assert.Equal(t, common.East, rat.Var("dir"))
+		serverAPI.Tick()
+	}
+	for i := 0; i < 100; i++ {
+		assert.Equal(t, l2, rat.Var("loc"))
+		assert.Equal(t, common.East, rat.Var("dir"))
+		serverAPI.Tick()
+	}
 }
