@@ -164,6 +164,10 @@ func (t *MobPlayerImpl) Proc(src *types.Datum, usr *types.Datum, name string, pa
 		return t.MobPlayerData.ProcStat(src, usr, params), true
 	case "look":
 		return t.MobPlayerData.Proclook(src, usr, params), true
+	case "say":
+		return t.MobPlayerData.Procsay(src, usr, params), true
+	case "whisper":
+		return t.MobPlayerData.Procwhisper(src, usr, params), true
 	default:
 		return nil, false
 	}
@@ -187,9 +191,9 @@ func (t *MobPlayerImpl) ProcSettings(name string) (types.ProcSettings, bool) {
 	case "<<":
 		return types.ProcSettings{}, true
 	case "Bump":
-		return types.ProcSettings{}, true
+		return t.MobPlayerData.SettingsForProcBump(), true
 	case "Bumped":
-		return types.ProcSettings{}, true
+		return t.ExtAtomData.SettingsForProcBumped(), true
 	case "Enter":
 		return types.ProcSettings{}, true
 	case "Entered":
@@ -208,6 +212,10 @@ func (t *MobPlayerImpl) ProcSettings(name string) (types.ProcSettings, bool) {
 		return types.ProcSettings{}, true
 	case "look":
 		return types.ProcSettings{}, true
+	case "say":
+		return t.MobPlayerData.SettingsForProcsay(), true
+	case "whisper":
+		return t.MobPlayerData.SettingsForProcwhisper(), true
 	default:
 		return types.ProcSettings{}, false
 	}

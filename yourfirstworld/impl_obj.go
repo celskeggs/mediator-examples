@@ -170,7 +170,7 @@ func (t *ObjImpl) ProcSettings(name string) (types.ProcSettings, bool) {
 	case "Bump":
 		return types.ProcSettings{}, true
 	case "Bumped":
-		return types.ProcSettings{}, true
+		return t.ExtAtomData.SettingsForProcBumped(), true
 	case "Enter":
 		return types.ProcSettings{}, true
 	case "Entered":

@@ -12,6 +12,7 @@ import (
 	"github.com/celskeggs/mediator/websession"
 	"github.com/stretchr/testify/assert"
 	"runtime"
+	"strings"
 	"testing"
 )
 
@@ -36,7 +37,7 @@ func TestTurfLocation(t *testing.T) {
 
 func TestPlayerLocation(t *testing.T) {
 	gameworld := BuildWorld()
-	gameworld.ServerAPI().AddPlayer()
+	gameworld.ServerAPI().AddPlayer("")
 	player := gameworld.FindOneType("/mob/player")
 	assert.NotNil(t, player)
 	if player != nil {
@@ -60,7 +61,7 @@ func TestPlayerLocation(t *testing.T) {
 
 func TestPlayerContinuedExistence(t *testing.T) {
 	gameworld := BuildWorld()
-	gameworld.ServerAPI().AddPlayer().Remove()
+	gameworld.ServerAPI().AddPlayer("").Remove()
 	player := gameworld.FindOneType("/mob/player")
 	assert.NotNil(t, player)
 	if player == nil {
@@ -89,7 +90,7 @@ func TestPlayerContinuedExistence(t *testing.T) {
 func TestWorldRender(t *testing.T) {
 	gameworld := BuildWorld()
 	api := gameworld.ServerAPI()
-	player := api.AddPlayer()
+	player := api.AddPlayer("")
 	view := player.Render()
 	assert.True(t, len(view.Sprites) > 0)
 	runtime.GC()
@@ -138,7 +139,7 @@ func TestWalkBetweenAreas(t *testing.T) {
 	// 11, 4
 
 	gameworld := BuildWorld()
-	playerAPI := gameworld.ServerAPI().AddPlayer()
+	playerAPI := gameworld.ServerAPI().AddPlayer("")
 
 	player := gameworld.FindOneType("/mob/player")
 	assert.NotNil(t, player)
@@ -167,7 +168,7 @@ func TestWalkBetweenAreas(t *testing.T) {
 
 func TestStepOffMap(t *testing.T) {
 	gameworld := BuildWorld()
-	playerAPI := gameworld.ServerAPI().AddPlayer()
+	playerAPI := gameworld.ServerAPI().AddPlayer("")
 
 	player := gameworld.FindOneType("/mob/player")
 	assert.NotNil(t, player)
@@ -195,7 +196,7 @@ func TestStepOffMap(t *testing.T) {
 
 func TestWalkIntoWalls(t *testing.T) {
 	gameworld := BuildWorld()
-	playerAPI := gameworld.ServerAPI().AddPlayer()
+	playerAPI := gameworld.ServerAPI().AddPlayer("")
 
 	player := gameworld.FindOneType("/mob/player")
 	assert.NotNil(t, player)
@@ -225,7 +226,7 @@ func TestFillUpEntireMap(t *testing.T) {
 	found := false
 	serverAPI := gameworld.ServerAPI()
 	for i := 0; i < 1000; i++ {
-		player := serverAPI.AddPlayer()
+		player := serverAPI.AddPlayer("")
 		player.Render()
 		player.PullRequests()
 		player.Remove()
@@ -244,7 +245,7 @@ func TestFillUpEntireMap(t *testing.T) {
 
 func TestLookVerb(t *testing.T) {
 	gameworld := BuildWorld()
-	playerAPI := gameworld.ServerAPI().AddPlayer()
+	playerAPI := gameworld.ServerAPI().AddPlayer("")
 
 	player := gameworld.FindOneType("/mob/player")
 	assert.NotNil(t, player)
@@ -268,7 +269,7 @@ func iconCounts(playerAPI websession.PlayerAPI) map[string]int {
 
 func TestGetDropVerbs(t *testing.T) {
 	gameworld := BuildWorld()
-	playerAPI := gameworld.ServerAPI().AddPlayer()
+	playerAPI := gameworld.ServerAPI().AddPlayer("")
 
 	player := gameworld.FindOneType("/mob/player")
 	assert.NotNil(t, player)
@@ -333,7 +334,7 @@ func TestGetDropVerbs(t *testing.T) {
 
 func TestEatVerb(t *testing.T) {
 	gameworld := BuildWorld()
-	playerAPI := gameworld.ServerAPI().AddPlayer()
+	playerAPI := gameworld.ServerAPI().AddPlayer("")
 
 	player := gameworld.FindOneType("/mob/player")
 	assert.NotNil(t, player)
@@ -374,7 +375,7 @@ func TestEatVerb(t *testing.T) {
 
 func TestReadVerb(t *testing.T) {
 	gameworld := BuildWorld()
-	playerAPI := gameworld.ServerAPI().AddPlayer()
+	playerAPI := gameworld.ServerAPI().AddPlayer("")
 
 	player := gameworld.FindOneType("/mob/player")
 	assert.NotNil(t, player)
@@ -438,7 +439,7 @@ func TestReadVerb(t *testing.T) {
 func TestStatPanel(t *testing.T) {
 	gameworld := BuildWorld()
 	serverAPI := gameworld.ServerAPI()
-	playerAPI := serverAPI.AddPlayer()
+	playerAPI := serverAPI.AddPlayer("")
 
 	player := gameworld.FindOneType("/mob/player")
 	assert.NotNil(t, player)
@@ -457,7 +458,7 @@ func TestStatPanel(t *testing.T) {
 func TestDisappearingRat(t *testing.T) {
 	gameworld := BuildWorld()
 	serverAPI := gameworld.ServerAPI()
-	playerAPI := serverAPI.AddPlayer()
+	playerAPI := serverAPI.AddPlayer("")
 
 	player := gameworld.FindOneType("/mob/player")
 	assert.NotNil(t, player)
@@ -489,7 +490,7 @@ func TestDisappearingRat(t *testing.T) {
 func TestBumpAngryRat(t *testing.T) {
 	gameworld := BuildWorld()
 	serverAPI := gameworld.ServerAPI()
-	playerAPI := serverAPI.AddPlayer()
+	playerAPI := serverAPI.AddPlayer("")
 
 	player := gameworld.FindOneType("/mob/player")
 	assert.NotNil(t, player)
@@ -563,4 +564,99 @@ func TestRatScurryingTowardsCheese(t *testing.T) {
 		assert.Equal(t, common.East, rat.Var("dir"))
 		serverAPI.Tick()
 	}
+}
+
+func TestPlayerIsGuest(t *testing.T) {
+	gameworld := BuildWorld()
+
+	gameworld.ServerAPI().AddPlayer("")
+	player := gameworld.FindOneType("/mob/player")
+	assert.NotNil(t, player)
+	client := player.Var("client")
+	key := types.Unstring(client.Var("key"))
+	assert.True(t, strings.HasPrefix(key, "Guest-"), "expected key to start with \"Guest-\", but was %q", key)
+	name := types.Unstring(player.Var("name"))
+	assert.Equal(t, key, name)
+}
+
+func TestPlayerIsNamed(t *testing.T) {
+	gameworld := BuildWorld()
+
+	expectedName := "MyPlayerName"
+
+	gameworld.ServerAPI().AddPlayer(expectedName)
+	player := gameworld.FindOneType("/mob/player")
+	assert.NotNil(t, player)
+	client := player.Var("client")
+	key := types.Unstring(client.Var("key"))
+	assert.Equal(t, expectedName, key)
+	name := types.Unstring(player.Var("name"))
+	assert.Equal(t, expectedName, name)
+}
+
+func TestSay(t *testing.T) {
+	gameworld := BuildWorld()
+	serverAPI := gameworld.ServerAPI()
+
+	speakername := "SamplePlayerName"
+
+	speakerPlayerAPI := serverAPI.AddPlayer(speakername)
+	speakerPlayer := gameworld.FindOneType("/mob/player")
+	assert.NotNil(t, speakerPlayer)
+
+	hearerPlayerAPI := serverAPI.AddPlayer("")
+	hearerPlayer := gameworld.FindOne(func(t *types.Datum) bool {
+		return types.IsType(t, "/mob/player") && t != speakerPlayer
+	})
+	assert.NotNil(t, hearerPlayer)
+
+	distantPlayerAPI := serverAPI.AddPlayer("")
+	distantPlayer := gameworld.FindOne(func(t *types.Datum) bool {
+		return types.IsType(t, "/mob/player") && t != speakerPlayer && t != hearerPlayer
+	})
+	assert.NotNil(t, distantPlayer)
+
+	x, y, z := world.XYZ(speakerPlayer)
+
+	ok := types.Unint(hearerPlayer.Invoke(nil, "Move", gameworld.LocateXYZ(x+5, y, z)))
+	assert.Equal(t, 1, ok)
+	ok = types.Unint(distantPlayer.Invoke(nil, "Move", gameworld.LocateXYZ(x+6, y, z)))
+	assert.Equal(t, 1, ok)
+
+	// ignore any messages so far
+	speakerPlayerAPI.PullRequests()
+	hearerPlayerAPI.PullRequests()
+	distantPlayerAPI.PullRequests()
+
+	util.FIXME("The 'say' command with no argument should actually pop up a dialog for the player to enter a string")
+
+	for verb, display := range map[string]string {
+		"say": speakername + " says, \"\"",
+		"say \"": speakername + " says, \"\"",
+		"say \"test123\"": speakername + " says, \"test123\"",
+		"say \"hello world\"": speakername + " says, \"hello world\"",
+		"say \"one two three": speakername + " says, \"one two three\"",
+	} {
+		speakerPlayerAPI.Command(webclient.Command{
+			Verb: verb,
+		})
+
+		for who, playerAPI := range map[string]websession.PlayerAPI{ "speaker": speakerPlayerAPI, "hearer": hearerPlayerAPI } {
+			lines, sounds, flicks := playerAPI.PullRequests()
+			assert.Equal(t, 1, len(lines), "during verb %q for %s, actual was: %v", verb, who, lines)
+			assert.Contains(t, lines, display, "during verb %q for %s", verb, who)
+			assert.Equal(t, 0, len(sounds))
+			assert.Equal(t, 0, len(flicks))
+		}
+
+		lines, sounds, flicks := distantPlayerAPI.PullRequests()
+		assert.Equal(t, 0, len(lines), "during verb %q", verb)
+		assert.Equal(t, 0, len(sounds))
+		assert.Equal(t, 0, len(flicks))
+	}
+}
+
+func TestSectionE(t *testing.T) {
+	util.FIXME("uncomment the rest of the things in Section E")
+	t.Error("unimplemented")
 }

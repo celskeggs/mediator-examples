@@ -20,6 +20,8 @@ func NewMobPlayerData(src *types.Datum, _ *MobPlayerData, _ ...types.Value) {
 	src.SetVar("desc", types.String("A handsome and dashing rogue."))
 	src.SetVar("name", types.String("player"))
 	src.SetVar("verbs", src.Var("verbs").Invoke(nil, "+", atoms.NewVerb("look", "/mob/player", "look")))
+	src.SetVar("verbs", src.Var("verbs").Invoke(nil, "+", atoms.NewVerb("say", "/mob/player", "say")))
+	src.SetVar("verbs", src.Var("verbs").Invoke(nil, "+", atoms.NewVerb("whisper", "/mob/player", "whisper")))
 }
 
 func (chunk *MobPlayerData) Shadow0ForProcBump(varsrc *types.Datum, varusr *types.Datum, allargs []types.Value) (out types.Value) {
@@ -52,6 +54,42 @@ func (chunk *MobPlayerData) ProcBump(varsrc *types.Datum, varusr *types.Datum, a
 	return out
 }
 
+func (*MobPlayerData) SettingsForProcBump() types.ProcSettings {
+	return types.ProcSettings{
+		ArgTypes: []types.ProcArgumentAs{
+			types.ProcArgumentNone,
+		},
+	}
+}
+
+func (chunk *MobPlayerData) Procsay(varsrc *types.Datum, varusr *types.Datum, allargs []types.Value) (out types.Value) {
+	varmsg := types.Param(allargs, 0)
+	(procs.Invoke(atoms.WorldOf(varsrc), varusr, "view", varsrc)).Invoke(varusr, "<<", types.String(format.FormatMacro("The", varsrc)+" says, \""+format.FormatMacro("the", varmsg)+"\""))
+	return out
+}
+
+func (*MobPlayerData) SettingsForProcsay() types.ProcSettings {
+	return types.ProcSettings{
+		ArgTypes: []types.ProcArgumentAs{
+			types.ProcArgumentText,
+		},
+	}
+}
+
+func (chunk *MobPlayerData) Procwhisper(varsrc *types.Datum, varusr *types.Datum, allargs []types.Value) (out types.Value) {
+	varmsg := types.Param(allargs, 0)
+	(procs.Invoke(atoms.WorldOf(varsrc), varusr, "view", types.Int(1))).Invoke(varusr, "<<", types.String(format.FormatMacro("The", varsrc)+" whispers, \""+format.FormatMacro("the", varmsg)+"\""))
+	return out
+}
+
+func (*MobPlayerData) SettingsForProcwhisper() types.ProcSettings {
+	return types.ProcSettings{
+		ArgTypes: []types.ProcArgumentAs{
+			types.ProcArgumentText,
+		},
+	}
+}
+
 //mediator:declare MobRatData /mob/rat /mob
 type MobRatData struct {
 }
@@ -68,6 +106,14 @@ func (chunk *MobRatData) ProcBumped(varsrc *types.Datum, varusr *types.Datum, al
 	varsrc.SetVar("dir", procs.Invoke(atoms.WorldOf(varsrc), varusr, "get_dir", varsrc, varbumper))
 	_ = procs.Invoke(atoms.WorldOf(varsrc), varusr, "flick", types.String("fight"), varsrc)
 	return out
+}
+
+func (*MobRatData) SettingsForProcBumped() types.ProcSettings {
+	return types.ProcSettings{
+		ArgTypes: []types.ProcArgumentAs{
+			types.ProcArgumentNone,
+		},
+	}
 }
 
 //mediator:declare TurfFloorData /turf/floor /turf
@@ -226,6 +272,9 @@ func (*ExtAreaData) SettingsForProcEntered() types.ProcSettings {
 		Src: types.SrcSetting{
 			Type: types.SrcSettingTypeView,
 		},
+		ArgTypes: []types.ProcArgumentAs{
+			types.ProcArgumentNone,
+		},
 	}
 }
 
@@ -258,6 +307,14 @@ func NewExtAtomData(src *types.Datum, _ *ExtAtomData, _ ...types.Value) {
 
 func (chunk *ExtAtomData) ProcBumped(varsrc *types.Datum, varusr *types.Datum, allargs []types.Value) (out types.Value) {
 	return out
+}
+
+func (*ExtAtomData) SettingsForProcBumped() types.ProcSettings {
+	return types.ProcSettings{
+		ArgTypes: []types.ProcArgumentAs{
+			types.ProcArgumentNone,
+		},
+	}
 }
 
 func BeforeMap(world *world.World) []string {
